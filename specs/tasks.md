@@ -53,10 +53,10 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 5 — REPL
 
-- [ ] T-050 Prompt `> `
-- [ ] T-051 Ignore empty lines; `quit` / `exit` print `Goodbye.` and exit 0
-- [ ] T-052 Keep dialog_state, draft, pending_* across turns
-- [ ] T-053 Print reply; exit when `should_exit`
+- [x] T-050 Prompt `> `
+- [x] T-051 Ignore empty lines; `quit` / `exit` print `Goodbye.` and exit 0
+- [x] T-052 Keep dialog_state, draft, pending_* across turns
+- [x] T-053 Print reply; exit when `should_exit`
 
 **Done when:** AC-5 passes.
 
