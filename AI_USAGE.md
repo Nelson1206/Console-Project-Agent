@@ -37,3 +37,8 @@ specs/plan.md ##LangGraph, State, JSON schema
 specs/tasks.md ##Optional implementation steps
 
 
+## 2. Code Implementation
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:** Implement and test code by task
+- **Main prompt:** Implement {task id from 'tasks'}
