@@ -34,10 +34,10 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 3 — LangGraph skeleton
 
-- [ ] T-030 Define `AgentState` (including draft, updates, pending_action, pending_matches)
-- [ ] T-031 Build the graph: classify routes create/list/get/update/delete/exit/unknown
-- [ ] T-032 After extract, branch to follow-up or create using `missing_fields`
-- [ ] T-033 compile + invoke with stubs without crashing
+- [x] T-030 Define `AgentState` (including draft, updates, pending_action, pending_matches)
+- [x] T-031 Build the graph: classify routes create/list/get/update/delete/exit/unknown
+- [x] T-032 After extract, branch to follow-up or create using `missing_fields`
+- [x] T-033 compile + invoke with stubs without crashing
 
 **Done when:** The graph compiles; a fixed stub input reaches the expected node.
 
