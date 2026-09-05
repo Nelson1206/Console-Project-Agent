@@ -93,20 +93,22 @@ Status: `- [ ]` todo; `- [x]` done.
 - [x] T-090 README: install, **Ollama only**, verified model name, single start command, short LangGraph write-up
 - [x] T-091 README may include 2–3 real sessions (at least AC-1; follow-up and delete disambiguation recommended)
 - [X] T-092 `AI_USAGE.md` (Cursor was used; this file is required)
-- [ ] T-093 Walk AC-7 from a clean environment using only the README
+- [X] T-093 Walk AC-7 from a clean environment using only the README
 
 **Done when:** A reviewer can accept without a cloud key and without asking questions.
 
 ## Completion checklist
 
-- [ ] AC-1 three replies match the assignment example verbatim
-- [ ] Missing fields listed together; no partial writes (AC-2, AC-3)
-- [ ] Empty-store list uses the fixed English line (AC-4)
-- [ ] `quit` / `exit` → `Goodbye.` (AC-5)
-- [ ] Vague input does not crash (AC-6)
-- [ ] Data survives restart (AC-8)
-- [ ] New intent during follow-up cancels the draft (AC-9)
-- [ ] Optional fields captured if present (AC-10)
-- [ ] get / collision disambiguation / update / delete / not found (AC-11–AC-15)
-- [ ] README covers Ollama only; `requirements.txt` and `AI_USAGE.md` exist
-- [ ] Routing goes through LangGraph; code is modular
+Verified 2026-09-05 against live Ollama `llama3.2`. Log: `logs/checklist-2026-09-05.md`.
+
+- [x] AC-1 three replies match the assignment example verbatim
+- [x] Missing fields listed together; no partial writes (AC-2, AC-3)
+- [x] Empty-store list uses the fixed English line (AC-4)
+- [x] `quit` / `exit` → `Goodbye.` (AC-5)
+- [x] Vague input does not crash (AC-6)
+- [x] Data survives restart (AC-8)
+- [x] New intent during follow-up cancels the draft (AC-9)
+- [x] Optional fields captured if present (AC-10)
+- [x] get / collision disambiguation / update / delete / not found (AC-11–AC-15)
+- [x] README covers Ollama only; `requirements.txt` and `AI_USAGE.md` exist
+- [x] Routing goes through LangGraph; code is modular
