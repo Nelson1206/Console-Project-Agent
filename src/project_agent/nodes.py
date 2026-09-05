@@ -102,7 +102,10 @@ def extract_slots(state: AgentState) -> dict:
     draft = dict(state.get("draft") or {})
     user_input = (state.get("user_input") or "").strip()
     extracted = extract_from_text(user_input)
-    if state.get("intent") != "follow_up":
+    follow_up = state.get("intent") == "follow_up"
+    if follow_up:
+        extracted = _llm_slots_for_follow_up(draft, extracted, user_input)
+    else:
         try:
             llm_slots = extract_with_llm(user_input)
             for field in ("project_name", "customer"):
@@ -117,7 +120,7 @@ def extract_slots(state: AgentState) -> dict:
                 "reply": exc.user_message,
             }
     merged = merge_draft(draft, extracted)
-    if state.get("intent") == "follow_up":
+    if follow_up:
         merged = fill_remaining(merged, user_input)
     missing = missing_required(merged)
     return {
@@ -126,6 +129,24 @@ def extract_slots(state: AgentState) -> dict:
         "llm_error": False,
         "last_node": "extract_slots",
     }
+
+
+def _llm_slots_for_follow_up(
+    draft: dict,
+    extracted: dict[str, str],
+    user_input: str,
+) -> dict[str, str]:
+    """Fill still-missing fields from the LLM; never overwrite a filled required slot."""
+    preview = merge_draft(draft, extracted)
+    still_missing = missing_required(preview)
+    if not still_missing:
+        return extracted
+    try:
+        llm_slots = extract_with_llm(user_input)
+    except LLMError:
+        return extracted
+    allowed = set(still_missing) | set(OPTIONAL_FIELDS)
+    return merge_draft({key: value for key, value in llm_slots.items() if key in allowed}, extracted)
 
 
 def ask_followup(state: AgentState) -> dict:

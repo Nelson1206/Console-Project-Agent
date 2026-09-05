@@ -159,8 +159,8 @@ I still need the project name and the customer to create this project.
 > Can you create a proejct called GAMMA
 I still need the customer name for this project.
 
-> the customer is Amy                  
-Done. Created project "GAMMA" for customer the customer is Amy.
+> the customer is Amy
+Done. Created project "GAMMA" for customer Amy.
 ```
 
 ### 3. Delete when two projects share a name

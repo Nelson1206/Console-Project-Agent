@@ -95,7 +95,8 @@ def extract_from_text(text: str) -> dict[str, str]:
         return {}
     optionals, remaining = extract_optionals(raw)
     required = _extract_required(remaining)
-    return {**optionals, **required}
+    labeled = extract_updates(raw)
+    return {**optionals, **required, **labeled}
 
 
 def extract_target_name(text: str) -> str | None:
