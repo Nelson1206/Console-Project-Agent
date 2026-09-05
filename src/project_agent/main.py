@@ -5,7 +5,7 @@ from __future__ import annotations
 from dotenv import load_dotenv
 
 from project_agent.graph import invoke
-from project_agent.replies import GOODBYE, UNEXPECTED_ERROR
+from project_agent.replies import BANNER, GOODBYE, UNEXPECTED_ERROR, WELCOME
 from project_agent.state import AgentState
 
 CARRY_FIELDS = (
@@ -24,8 +24,21 @@ def carry_state(state: AgentState) -> AgentState:
     return {key: state[key] for key in CARRY_FIELDS if key in state}
 
 
+def _print_reply(text: str) -> None:
+    print(text)
+    print()
+
+
+def _print_startup() -> None:
+    print(BANNER)
+    print()
+    print(WELCOME)
+    print()
+
+
 def main() -> int:
     load_dotenv()
+    _print_startup()
     carried: AgentState = {}
     while True:
         try:
@@ -45,11 +58,11 @@ def main() -> int:
         try:
             state = invoke({**carried, "user_input": line})
         except Exception:
-            print(UNEXPECTED_ERROR)
+            _print_reply(UNEXPECTED_ERROR)
             continue
         reply = state.get("reply")
         if reply:
-            print(reply)
+            _print_reply(reply)
         if state.get("should_exit"):
             return 0
         carried = carry_state(state)

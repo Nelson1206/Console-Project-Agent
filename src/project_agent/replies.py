@@ -13,6 +13,15 @@ UNKNOWN = (
     "projects. Type quit or exit to leave."
 )
 GOODBYE = "Goodbye."
+BANNER = """\
+============================================================
+          Console Project Agent
+============================================================"""
+WELCOME = (
+    "Describe a project in natural language.\n"
+    "You can create, list, show, update, or delete projects.\n"
+    "Type quit or exit to leave."
+)
 STORAGE_READ_ERROR = "I could not read the project data file. It may be corrupt."
 STORAGE_WRITE_ERROR = "I could not save the project. The data file may be corrupt."
 UNEXPECTED_ERROR = "Something went wrong. Please try again."
