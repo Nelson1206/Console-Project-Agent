@@ -19,29 +19,16 @@ from project_agent.storage import StorageError, add_project, get_by_id, get_by_n
 from project_agent.storage import delete_project as remove_project
 from project_agent.storage import update_project as save_project_updates
 
-_INTENT_KEYWORDS = (
-    ("create", "create"),
-    ("list", "list"),
-    ("show", "get"),
-    ("get", "get"),
-    ("update", "update"),
-    ("delete", "delete"),
-    ("remove", "delete"),
-    ("quit", "exit"),
-    ("exit", "exit"),
-)
+_EXACT_COMMANDS = {
+    "quit": "exit",
+    "exit": "exit",
+    "list projects": "list",
+}
 _NEW_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
-_KEYWORD_INTENTS = {"create", "list", "get", "update", "delete", "exit"}
 
 
 def _keyword_intent(text: str) -> str | None:
-    lowered = text.casefold()
-    for keyword, intent in _INTENT_KEYWORDS:
-        if lowered == keyword or lowered.startswith(f"{keyword} "):
-            return intent
-        if f" {keyword} " in f" {lowered} ":
-            return intent
-    return None
+    return _EXACT_COMMANDS.get(text.casefold().strip())
 
 
 def classify_intent(user_input: str, dialog_state: str = "idle") -> str:
@@ -49,10 +36,10 @@ def classify_intent(user_input: str, dialog_state: str = "idle") -> str:
     if dialog_state == "disambiguating" and text.isdigit():
         return "disambiguation_choice"
     keyword = _keyword_intent(text)
-    if dialog_state == "collecting" and keyword is None:
-        return "follow_up"
-    if keyword in _KEYWORD_INTENTS:
+    if keyword is not None:
         return keyword
+    if dialog_state == "collecting":
+        return "follow_up"
     return classify_with_llm(text)
 
 
