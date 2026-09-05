@@ -43,11 +43,11 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 4 — create / list / follow-up
 
-- [ ] T-040 create success line is **verbatim** `Done. Created project "{name}" for customer {customer}.`
-- [ ] T-041 Missing fields do not write; list all missing fields (spec 5.2 three sentences)
-- [ ] T-042 Slot-fill can finish create while collecting; **any new intent** drops the draft
-- [ ] T-043 list: two golden-path projects match the assignment **verbatim**; empty list uses spec 5.4
-- [ ] T-044 unknown uses spec 5.8
+- [x] T-040 create success line is **verbatim** `Done. Created project "{name}" for customer {customer}.`
+- [x] T-041 Missing fields do not write; list all missing fields (spec 5.2 three sentences)
+- [x] T-042 Slot-fill can finish create while collecting; **any new intent** drops the draft
+- [x] T-043 list: two golden-path projects match the assignment **verbatim**; empty list uses spec 5.4
+- [x] T-044 unknown uses spec 5.8
 
 **Done when:** Stubs can walk AC-1 (structure and copy), AC-2, AC-3, AC-4, AC-6, AC-9.
 

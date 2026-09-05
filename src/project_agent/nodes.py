@@ -1,12 +1,12 @@
-"""Graph nodes: classify, extract, follow-up, CRUD, list, clarify.
-
-Phase 3 uses stub logic so the graph can compile and route. Later phases
-replace stubs with real LLM, storage, and fixed English copy.
-"""
+"""Graph nodes: classify, extract, follow-up, CRUD, list, clarify."""
 
 from __future__ import annotations
 
+from project_agent import replies
+from project_agent.models import Project
+from project_agent.slots import extract_from_text, fill_remaining, merge_draft, missing_required
 from project_agent.state import AgentState
+from project_agent.storage import StorageError, add_project, load_projects
 
 _INTENT_KEYWORDS = (
     ("create", "create"),
@@ -20,18 +20,12 @@ _INTENT_KEYWORDS = (
     ("exit", "exit"),
 )
 _NEW_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
-_REQUIRED_SLOTS = ("project_name", "customer")
 
 
 def _stub(node_name: str, **extra: object) -> dict:
     payload = {"last_node": node_name, "reply": f"[stub: {node_name}]"}
     payload.update(extra)
     return payload
-
-
-def _first_word(text: str) -> str:
-    parts = text.strip().split()
-    return parts[0].casefold() if parts else ""
 
 
 def _keyword_intent(text: str) -> str | None:
@@ -76,24 +70,66 @@ def classify(state: AgentState) -> dict:
 
 def extract_slots(state: AgentState) -> dict:
     draft = dict(state.get("draft") or {})
-    missing = [name for name in _REQUIRED_SLOTS if not str(draft.get(name) or "").strip()]
+    user_input = (state.get("user_input") or "").strip()
+    merged = merge_draft(draft, extract_from_text(user_input))
+    if state.get("intent") == "follow_up":
+        merged = fill_remaining(merged, user_input)
+    missing = missing_required(merged)
     return {
-        "draft": draft,
+        "draft": merged,
         "missing_fields": missing,
         "last_node": "extract_slots",
     }
 
 
 def ask_followup(state: AgentState) -> dict:
-    return _stub("ask_followup", dialog_state="collecting")
+    missing = state.get("missing_fields") or []
+    return {
+        "last_node": "ask_followup",
+        "dialog_state": "collecting",
+        "reply": replies.followup(missing),
+    }
 
 
 def create_project(state: AgentState) -> dict:
-    return _stub("create_project", dialog_state="idle", draft={}, missing_fields=[])
+    draft = state.get("draft") or {}
+    try:
+        project = Project.create(
+            draft["project_name"],
+            draft["customer"],
+            start_date=draft.get("start_date"),
+            location=draft.get("location"),
+            status=draft.get("status"),
+            notes=draft.get("notes"),
+        )
+        add_project(project)
+    except (KeyError, ValueError):
+        return {
+            "last_node": "ask_followup",
+            "dialog_state": "collecting",
+            "reply": replies.followup(missing_required(draft)),
+        }
+    except StorageError:
+        return {
+            "last_node": "create_project",
+            "dialog_state": "idle",
+            "reply": replies.STORAGE_WRITE_ERROR,
+        }
+    return {
+        "last_node": "create_project",
+        "dialog_state": "idle",
+        "draft": {},
+        "missing_fields": [],
+        "reply": replies.created(project.project_name, project.customer),
+    }
 
 
 def list_projects(state: AgentState) -> dict:
-    return _stub("list_projects")
+    try:
+        projects = load_projects()
+    except StorageError:
+        return {"last_node": "list_projects", "reply": replies.STORAGE_READ_ERROR}
+    return {"last_node": "list_projects", "reply": replies.listed(projects)}
 
 
 def resolve_target(state: AgentState) -> dict:
@@ -126,12 +162,12 @@ def not_found(state: AgentState) -> dict:
 
 
 def clarify_message(state: AgentState) -> dict:
-    return _stub("clarify_message")
+    return {"last_node": "clarify_message", "reply": replies.UNKNOWN}
 
 
 def exit_node(state: AgentState) -> dict:
     return {
         "last_node": "exit_node",
         "should_exit": True,
-        "reply": "Goodbye.",
+        "reply": replies.GOODBYE,
     }
