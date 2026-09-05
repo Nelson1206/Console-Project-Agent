@@ -15,6 +15,7 @@ UNKNOWN = (
 GOODBYE = "Goodbye."
 STORAGE_READ_ERROR = "I could not read the project data file. It may be corrupt."
 STORAGE_WRITE_ERROR = "I could not save the project. The data file may be corrupt."
+UNEXPECTED_ERROR = "Something went wrong. Please try again."
 OLLAMA_UNREACHABLE = (
     "I could not reach Ollama at the configured URL. Start Ollama and try again."
 )

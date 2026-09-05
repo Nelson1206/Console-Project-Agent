@@ -5,7 +5,7 @@ from __future__ import annotations
 from dotenv import load_dotenv
 
 from project_agent.graph import invoke
-from project_agent.replies import GOODBYE
+from project_agent.replies import GOODBYE, UNEXPECTED_ERROR
 from project_agent.state import AgentState
 
 CARRY_FIELDS = (
@@ -33,12 +33,20 @@ def main() -> int:
         except EOFError:
             print(GOODBYE)
             return 0
+        except KeyboardInterrupt:
+            print()
+            print(GOODBYE)
+            return 0
         if not line:
             continue
         if line.lower() in {"quit", "exit"}:
             print(GOODBYE)
             return 0
-        state = invoke({**carried, "user_input": line})
+        try:
+            state = invoke({**carried, "user_input": line})
+        except Exception:
+            print(UNEXPECTED_ERROR)
+            continue
         reply = state.get("reply")
         if reply:
             print(reply)

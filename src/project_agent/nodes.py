@@ -12,6 +12,7 @@ from project_agent.slots import (
     fill_remaining,
     merge_draft,
     missing_required,
+    user_omitted_required,
 )
 from project_agent.state import AgentState
 from project_agent.storage import StorageError, add_project, get_by_id, get_by_name, load_projects
@@ -103,7 +104,11 @@ def extract_slots(state: AgentState) -> dict:
     extracted = extract_from_text(user_input)
     if state.get("intent") != "follow_up":
         try:
-            extracted = merge_draft(extract_with_llm(user_input), extracted)
+            llm_slots = extract_with_llm(user_input)
+            for field in ("project_name", "customer"):
+                if field not in extracted and user_omitted_required(user_input, field):
+                    llm_slots.pop(field, None)
+            extracted = merge_draft(llm_slots, extracted)
         except LLMError as exc:
             return {
                 "draft": draft,
@@ -277,11 +282,18 @@ def ask_disambiguation(state: AgentState) -> dict:
 
 
 def get_project(state: AgentState) -> dict:
-    project = get_by_id(state.get("selected_id") or "")
-    if project is None:
-        matches = state.get("pending_matches") or []
-        if len(matches) == 1:
-            project = get_by_id(matches[0]["id"])
+    try:
+        project = get_by_id(state.get("selected_id") or "")
+        if project is None:
+            matches = state.get("pending_matches") or []
+            if len(matches) == 1:
+                project = get_by_id(matches[0]["id"])
+    except StorageError:
+        return {
+            "last_node": "get_project",
+            **_clear_target(),
+            "reply": replies.STORAGE_READ_ERROR,
+        }
     if project is None:
         return {
             "last_node": "not_found",

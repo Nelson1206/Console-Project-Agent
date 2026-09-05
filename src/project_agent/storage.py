@@ -39,6 +39,8 @@ def load_projects(path: Path | None = None) -> list[Project]:
 
 def save_projects(projects: list[Project], path: Path | None = None) -> None:
     store_path = path or get_storage_path()
+    if store_path.exists():
+        load_projects(store_path)
     store_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {"projects": [project.to_dict() for project in projects]}
     store_path.write_text(

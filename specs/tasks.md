@@ -82,9 +82,9 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 8 — Robustness
 
-- [ ] T-080 Unparseable LLM output → unknown or one retry; do not crash
-- [ ] T-081 StorageError → English message; do not overwrite a bad file
-- [ ] T-082 Blank slot strings count as missing; keep asking
+- [x] T-080 Unparseable LLM output → unknown or one retry; do not crash
+- [x] T-081 StorageError → English message; do not overwrite a bad file
+- [x] T-082 Blank slot strings count as missing; keep asking
 
 **Done when:** The process stays up on bad input / bad model / bad JSON.
 

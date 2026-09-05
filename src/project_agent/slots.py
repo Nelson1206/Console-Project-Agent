@@ -5,7 +5,8 @@ from __future__ import annotations
 import re
 
 _REQUIRED = ("project_name", "customer")
-_SKIP_NAMES = {"a", "an", "the", "project"}
+_SKIP_NAMES = {"a", "an", "the", "project", "for", "customer"}
+_PLACEHOLDER_VALUES = {"unknown", "n/a", "na", "none", "null", "nil", "-", "tbd", "missing"}
 _FIELD_LABELS = {
     "project name": "project_name",
     "project_name": "project_name",
@@ -79,6 +80,15 @@ def extract_optionals(text: str) -> tuple[dict[str, str], str]:
     return found, remaining
 
 
+def user_omitted_required(text: str, field: str) -> bool:
+    """True when the sentence has a blank required slot, not merely an unmentioned one."""
+    if field == "project_name":
+        return bool(re.search(r"\bcalled\s+(?:for\b|$)", text, re.I))
+    if field == "customer":
+        return bool(re.search(r"\bfor(?:\s+customer)?\s*$", text, re.I))
+    return False
+
+
 def extract_from_text(text: str) -> dict[str, str]:
     raw = text.strip()
     if not raw:
@@ -111,8 +121,9 @@ def extract_updates(text: str) -> dict[str, str]:
 def merge_draft(draft: dict, extracted: dict[str, str]) -> dict:
     merged = dict(draft)
     for key, value in extracted.items():
-        if value:
-            merged[key] = value
+        cleaned = value.strip() if isinstance(value, str) else value
+        if cleaned and not _is_blank_slot(cleaned):
+            merged[key] = cleaned
     return merged
 
 
@@ -126,7 +137,7 @@ def fill_remaining(draft: dict, user_input: str) -> dict:
     if len(missing) != 1:
         return draft
     value = user_input.strip().strip("\"'")
-    if not value:
+    if not value or _is_blank_slot(value):
         return draft
     updated = dict(draft)
     updated[missing[0]] = value
@@ -155,9 +166,18 @@ def _extract_required(raw: str) -> dict[str, str]:
 def _payload(name: str | None, customer: str | None) -> dict[str, str]:
     result: dict[str, str] = {}
     cleaned_name = _clean(name)
-    if cleaned_name and cleaned_name.casefold() not in _SKIP_NAMES:
+    if cleaned_name and not _is_placeholder_name(cleaned_name):
         result["project_name"] = cleaned_name
     cleaned_customer = _clean(customer)
-    if cleaned_customer:
+    if cleaned_customer and cleaned_customer.casefold() not in _SKIP_NAMES:
         result["customer"] = cleaned_customer
     return result
+
+
+def _is_placeholder_name(name: str) -> bool:
+    lowered = name.casefold()
+    return lowered in _SKIP_NAMES or lowered.startswith("for ") or _is_blank_slot(name)
+
+
+def _is_blank_slot(value: str) -> bool:
+    return not value.strip() or value.strip().casefold() in _PLACEHOLDER_VALUES
