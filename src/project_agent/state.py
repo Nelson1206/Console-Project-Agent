@@ -18,3 +18,4 @@ class AgentState(TypedDict, total=False):
     reply: str
     should_exit: bool
     last_node: str
+    llm_error: bool

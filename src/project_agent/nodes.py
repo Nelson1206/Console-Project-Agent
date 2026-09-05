@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from project_agent import replies
+from project_agent.llm import LLMError, classify_with_llm, extract_with_llm
 from project_agent.models import Project
 from project_agent.slots import extract_from_text, fill_remaining, merge_draft, missing_required
 from project_agent.state import AgentState
@@ -45,14 +46,24 @@ def classify_intent(user_input: str, dialog_state: str = "idle") -> str:
     keyword = _keyword_intent(text)
     if dialog_state == "collecting" and keyword is None:
         return "follow_up"
-    return keyword or "unknown"
+    if keyword == "exit":
+        return keyword
+    return classify_with_llm(text)
 
 
 def classify(state: AgentState) -> dict:
     dialog_state = state.get("dialog_state") or "idle"
     user_input = state.get("user_input") or ""
-    intent = classify_intent(user_input, dialog_state)
-    result: dict = {"intent": intent, "last_node": "classify"}
+    try:
+        intent = classify_intent(user_input, dialog_state)
+    except LLMError as exc:
+        return {
+            "intent": "unknown",
+            "llm_error": True,
+            "last_node": "classify",
+            "reply": exc.user_message,
+        }
+    result: dict = {"intent": intent, "llm_error": False, "last_node": "classify"}
     if dialog_state in {"collecting", "disambiguating"} and intent in _NEW_INTENTS:
         result.update(
             {
@@ -71,13 +82,25 @@ def classify(state: AgentState) -> dict:
 def extract_slots(state: AgentState) -> dict:
     draft = dict(state.get("draft") or {})
     user_input = (state.get("user_input") or "").strip()
-    merged = merge_draft(draft, extract_from_text(user_input))
+    extracted = extract_from_text(user_input)
+    if state.get("intent") != "follow_up":
+        try:
+            extracted = merge_draft(extract_with_llm(user_input), extracted)
+        except LLMError as exc:
+            return {
+                "draft": draft,
+                "llm_error": True,
+                "last_node": "extract_slots",
+                "reply": exc.user_message,
+            }
+    merged = merge_draft(draft, extracted)
     if state.get("intent") == "follow_up":
         merged = fill_remaining(merged, user_input)
     missing = missing_required(merged)
     return {
         "draft": merged,
         "missing_fields": missing,
+        "llm_error": False,
         "last_node": "extract_slots",
     }
 
@@ -163,6 +186,10 @@ def not_found(state: AgentState) -> dict:
 
 def clarify_message(state: AgentState) -> dict:
     return {"last_node": "clarify_message", "reply": replies.UNKNOWN}
+
+
+def llm_error(state: AgentState) -> dict:
+    return {"last_node": "llm_error"}
 
 
 def exit_node(state: AgentState) -> dict:

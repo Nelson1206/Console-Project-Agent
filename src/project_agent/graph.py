@@ -20,6 +20,8 @@ __all__ = [
 
 
 def route_after_classify(state: AgentState) -> str:
+    if state.get("llm_error"):
+        return "llm_error"
     intent = state.get("intent") or "unknown"
     if intent in {"create", "follow_up"}:
         return "extract_slots"
@@ -40,6 +42,8 @@ def route_after_classify(state: AgentState) -> str:
 
 
 def route_after_extract(state: AgentState) -> str:
+    if state.get("llm_error"):
+        return "llm_error"
     missing = state.get("missing_fields") or []
     return "ask_followup" if missing else "create_project"
 
@@ -82,6 +86,7 @@ def build_graph() -> StateGraph:
     builder.add_node("delete_project", nodes.delete_project)
     builder.add_node("not_found", nodes.not_found)
     builder.add_node("clarify_message", nodes.clarify_message)
+    builder.add_node("llm_error", nodes.llm_error)
     builder.add_node("exit_node", nodes.exit_node)
 
     builder.add_edge(START, "classify")
@@ -97,12 +102,13 @@ def build_graph() -> StateGraph:
             "delete_project",
             "exit_node",
             "clarify_message",
+            "llm_error",
         ],
     )
     builder.add_conditional_edges(
         "extract_slots",
         route_after_extract,
-        ["create_project", "ask_followup"],
+        ["create_project", "ask_followup", "llm_error"],
     )
     builder.add_conditional_edges(
         "resolve_target",
@@ -127,6 +133,7 @@ def build_graph() -> StateGraph:
         "delete_project",
         "not_found",
         "clarify_message",
+        "llm_error",
         "exit_node",
     ):
         builder.add_edge(terminal, END)

@@ -62,11 +62,11 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 6 — Wire Ollama
 
-- [ ] T-060 `llm.py` builds an Ollama ChatModel only
-- [ ] T-061 classify structured output (including get/update/delete)
-- [ ] T-062 extract required + optional; do not clear filled fields this turn did not mention
-- [ ] T-063 Ollama down / missing model → English error, stay in the loop
-- [ ] T-064 Run AC-1 on a real model; reply bodies match verbatim
+- [x] T-060 `llm.py` builds an Ollama ChatModel only
+- [x] T-061 classify structured output (including get/update/delete)
+- [x] T-062 extract required + optional; do not clear filled fields this turn did not mention
+- [x] T-063 Ollama down / missing model → English error, stay in the loop
+- [x] T-064 Run AC-1 on a real model; reply bodies match verbatim
 
 **Done when:** Natural language can create and list; missing fields are prompted; no cloud key is required.
 

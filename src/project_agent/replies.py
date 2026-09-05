@@ -15,6 +15,14 @@ UNKNOWN = (
 GOODBYE = "Goodbye."
 STORAGE_READ_ERROR = "I could not read the project data file. It may be corrupt."
 STORAGE_WRITE_ERROR = "I could not save the project. The data file may be corrupt."
+OLLAMA_UNREACHABLE = (
+    "I could not reach Ollama at the configured URL. Start Ollama and try again."
+)
+OLLAMA_MODEL_MISSING = (
+    "I could not load the configured Ollama model. "
+    "Pull the model named in LLM_MODEL and try again."
+)
+OLLAMA_ERROR = "The language model request failed. Please try again."
 
 
 def created(project_name: str, customer: str) -> str:
