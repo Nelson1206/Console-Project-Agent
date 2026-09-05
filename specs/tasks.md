@@ -91,7 +91,7 @@ Status: `- [ ]` todo; `- [x]` done.
 ## Phase 9 — Submission docs
 
 - [x] T-090 README: install, **Ollama only**, verified model name, single start command, short LangGraph write-up
-- [ ] T-091 README may include 2–3 real sessions (at least AC-1; follow-up and delete disambiguation recommended)
+- [x] T-091 README may include 2–3 real sessions (at least AC-1; follow-up and delete disambiguation recommended)
 - [ ] T-092 `AI_USAGE.md` (Cursor was used; this file is required)
 - [ ] T-093 Walk AC-7 from a clean environment using only the README
 

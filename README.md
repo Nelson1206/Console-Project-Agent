@@ -75,7 +75,7 @@ One official command, from the project root with the virtualenv active and Ollam
 python -m project_agent.main
 ```
 
-Type natural language at the `> ` prompt. Type `quit` or `exit` to leave.
+On start the app prints a short banner and welcome text, then the `> ` prompt. Type natural language there. Type `quit` or `exit` to leave.
 
 Projects are saved to `data/projects.json`. If that file is missing it is treated as an empty list. If it is corrupt, the app reports an English error and does not overwrite it.
 
@@ -126,3 +126,58 @@ flowchart TD
 5. `unknown` explains the available actions. `quit` / `exit` print `Goodbye.` and end the process.
 
 Successful creates, updates, and deletes are written immediately to JSON. The chat model is served by local Ollama.
+
+## Example sessions
+
+These match the verified English replies. `id` values are generated at runtime and will differ on your machine.
+
+### 1. Create and list (assignment golden path)
+
+```text
+> list projects
+No projects found. Create one by describing it in natural language.
+
+> create a project called Alpha for customer Acme
+Done. Created project "Alpha" for customer Acme.
+
+> create project Beta for Globex
+Done. Created project "Beta" for customer Globex.
+
+> list projects
+Here are your projects (2):
+1. Alpha — customer: Acme
+2. Beta — customer: Globex
+
+```
+
+### 2. Missing field follow-up
+
+```text
+> Can you create a project
+I still need the project name and the customer to create this project.
+
+> Can you create a proejct called GAMMA
+I still need the customer name for this project.
+
+> the customer is Amy                  
+Done. Created project "GAMMA" for customer the customer is Amy.
+```
+
+### 3. Delete when two projects share a name
+
+```text
+> list projects      
+Here are your projects (4):
+1. Alpha — customer: Acme
+2. Beta — customer: Globex
+3. GAMMA — customer: the customer is Amy
+4. Alpha — customer: Globex
+
+> delete Alpha 
+Multiple projects named "Alpha" were found. Reply with a number:
+1. Alpha — customer: Acme — id: 6c88fc7b-4591-4cc9-b7bc-1347860ebdec
+2. Alpha — customer: Globex — id: 2cc759d9-928f-45ca-8dbf-f600cd30421c
+
+> 2      
+Done. Deleted project "Alpha" for customer Globex (id: 2cc759d9-928f-45ca-8dbf-f600cd30421c).
+```
