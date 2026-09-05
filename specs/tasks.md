@@ -25,10 +25,10 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 2 — Data layer
 
-- [ ] T-020 `Project`: `id`, `project_name`, `customer`, `created_at` + optional fields
-- [ ] T-021 load / save / add / get_by_name / get_by_id / update / delete
-- [ ] T-022 Missing file is empty; first write creates `data/projects.json`
-- [ ] T-023 Corrupt JSON raises `StorageError`; do not overwrite with an empty file
+- [x] T-020 `Project`: `id`, `project_name`, `customer`, `created_at` + optional fields
+- [x] T-021 load / save / add / get_by_name / get_by_id / update / delete
+- [x] T-022 Missing file is empty; first write creates `data/projects.json`
+- [x] T-023 Corrupt JSON raises `StorageError`; do not overwrite with an empty file
 
 **Done when:** A record can be written by hand, found by name (case-insensitive), updated, deleted, and still present after reload.
 
