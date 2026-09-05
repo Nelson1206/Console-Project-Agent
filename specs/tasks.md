@@ -72,11 +72,11 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Phase 7 — get / update / delete and optional fields
 
-- [ ] T-070 Optional fields: save if present in the sentence (AC-10); create does not ask for optionals
-- [ ] T-071 get: show one record; not found uses `No project named "<name>" was found.`
-- [ ] T-072 Same name: list candidates, wait for a number; new intent cancels (AC-12)
-- [ ] T-073 update: change fields and write; target without changes → follow-up (AC-13)
-- [ ] T-074 delete: delete immediately once resolved, no confirmation (AC-14)
+- [x] T-070 Optional fields: save if present in the sentence (AC-10); create does not ask for optionals
+- [x] T-071 get: show one record; not found uses `No project named "<name>" was found.`
+- [x] T-072 Same name: list candidates, wait for a number; new intent cancels (AC-12)
+- [x] T-073 update: change fields and write; target without changes → follow-up (AC-13)
+- [x] T-074 delete: delete immediately once resolved, no confirmation (AC-14)
 
 **Done when:** AC-10–AC-15 pass and AC-1 verbatim output still holds.
 

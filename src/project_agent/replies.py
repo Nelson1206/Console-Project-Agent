@@ -23,10 +23,72 @@ OLLAMA_MODEL_MISSING = (
     "Pull the model named in LLM_MODEL and try again."
 )
 OLLAMA_ERROR = "The language model request failed. Please try again."
+UPDATE_WHICH_FIELDS = (
+    "Which fields should I update? You can change project name, customer, "
+    "start date, location, status, or notes."
+)
+_FIELD_DISPLAY = {
+    "project_name": "project_name",
+    "customer": "customer",
+    "start_date": "start_date",
+    "location": "location",
+    "status": "status",
+    "notes": "notes",
+}
 
 
-def created(project_name: str, customer: str) -> str:
-    return f'Done. Created project "{project_name}" for customer {customer}.'
+def created(project_name: str, customer: str, extras: dict[str, str] | None = None) -> str:
+    line = f'Done. Created project "{project_name}" for customer {customer}.'
+    if not extras:
+        return line
+    bits = [f"{key}={value}" for key, value in extras.items() if value]
+    if not bits:
+        return line
+    return f"{line}\nAlso recorded: {', '.join(bits)}."
+
+
+def not_found(name: str) -> str:
+    return f'No project named "{name}" was found.'
+
+
+def got(project: Project) -> str:
+    lines = [
+        f'Project "{project.project_name}" (id: {project.id})',
+        f"customer: {project.customer}",
+        f"created_at: {project.created_at}",
+    ]
+    for field in OPTIONAL_FIELDS:
+        value = getattr(project, field)
+        if value:
+            lines.append(f"{field}: {value}")
+    return "\n".join(lines)
+
+
+def updated(project: Project, changes: dict[str, str]) -> str:
+    parts = [
+        f"{_FIELD_DISPLAY.get(field, field)} -> {value}"
+        for field, value in changes.items()
+    ]
+    return (
+        f'Done. Updated project "{project.project_name}" (id: {project.id}): '
+        + "; ".join(parts)
+    )
+
+
+def deleted(project: Project) -> str:
+    return (
+        f'Done. Deleted project "{project.project_name}" for customer '
+        f"{project.customer} (id: {project.id})."
+    )
+
+
+def disambiguation(name: str, matches: list[dict]) -> str:
+    lines = [f'Multiple projects named "{name}" were found. Reply with a number:']
+    for index, item in enumerate(matches, start=1):
+        lines.append(
+            f"{index}. {item['project_name']} — customer: {item['customer']} — id: {item['id']}"
+        )
+    return "\n".join(lines)
 
 
 def followup(missing_fields: list[str]) -> str:

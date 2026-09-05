@@ -15,6 +15,7 @@ class AgentState(TypedDict, total=False):
     pending_action: str
     pending_matches: list[dict]
     selected_id: str
+    lookup_name: str
     reply: str
     should_exit: bool
     last_node: str

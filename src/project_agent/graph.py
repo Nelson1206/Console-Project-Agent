@@ -23,13 +23,19 @@ def route_after_classify(state: AgentState) -> str:
     if state.get("llm_error"):
         return "llm_error"
     intent = state.get("intent") or "unknown"
-    if intent in {"create", "follow_up"}:
+    if intent == "follow_up":
+        if state.get("pending_action") == "update" and state.get("selected_id"):
+            return "resolve_target"
+        return "extract_slots"
+    if intent == "create":
         return "extract_slots"
     if intent == "list":
         return "list_projects"
     if intent in {"get", "update", "delete"}:
         return "resolve_target"
     if intent == "disambiguation_choice":
+        if not state.get("selected_id"):
+            return "ask_disambiguation"
         action = state.get("pending_action") or ""
         return {
             "get": "get_project",
@@ -49,6 +55,8 @@ def route_after_extract(state: AgentState) -> str:
 
 
 def route_after_resolve(state: AgentState) -> str:
+    if state.get("llm_error"):
+        return "llm_error"
     selected_id = state.get("selected_id") or ""
     matches = state.get("pending_matches") or []
     action = state.get("pending_action") or state.get("intent") or ""
@@ -97,6 +105,7 @@ def build_graph() -> StateGraph:
             "extract_slots",
             "list_projects",
             "resolve_target",
+            "ask_disambiguation",
             "get_project",
             "update_project",
             "delete_project",
@@ -121,6 +130,7 @@ def build_graph() -> StateGraph:
             "ask_followup",
             "not_found",
             "clarify_message",
+            "llm_error",
         ],
     )
     for terminal in (

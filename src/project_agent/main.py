@@ -15,6 +15,7 @@ CARRY_FIELDS = (
     "pending_action",
     "pending_matches",
     "selected_id",
+    "lookup_name",
     "missing_fields",
 )
 
