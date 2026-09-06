@@ -61,6 +61,10 @@ _FIELD_LABEL_HINT = re.compile(
     r"\b(?:customer|project\s*name|name|start\s*date|location|status|notes?)\s*(?:is|to|=|:)\b",
     re.IGNORECASE,
 )
+_QUESTION_HINT = re.compile(
+    r"\?|\b(?:what|who|why|how|when|where|which)\b",
+    re.IGNORECASE,
+)
 _MAX_BARE_TOKENS = 4
 
 
@@ -142,12 +146,12 @@ def missing_required(draft: dict) -> list[str]:
     return [name for name in _REQUIRED if not str(draft.get(name) or "").strip()]
 
 
-def _looks_like_bare_value(text: str) -> bool:
+def looks_like_bare_value(text: str) -> bool:
     """True for a short slot answer such as Acme, not a command or labeled clause."""
     tokens = text.split()
     if not tokens or len(tokens) > _MAX_BARE_TOKENS:
         return False
-    if _INTENT_VERBS.search(text) or _FIELD_LABEL_HINT.search(text):
+    if _INTENT_VERBS.search(text) or _FIELD_LABEL_HINT.search(text) or _QUESTION_HINT.search(text):
         return False
     return True
 
@@ -161,7 +165,7 @@ def fill_remaining(draft: dict, user_input: str) -> dict:
     if str(draft.get(field) or "").strip():
         return draft
     value = user_input.strip().strip("\"'")
-    if not value or _is_blank_slot(value) or not _looks_like_bare_value(value):
+    if not value or _is_blank_slot(value) or not looks_like_bare_value(value):
         return draft
     updated = dict(draft)
     updated[field] = value

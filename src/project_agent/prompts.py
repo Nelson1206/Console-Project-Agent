@@ -8,7 +8,7 @@ Allowed intents: create, list, get, update, delete, exit, unknown, follow_up.
 - update: change fields on an existing project
 - delete: remove an existing project
 - exit: the user wants to quit
-- follow_up: the user is answering a pending question (filling a missing field, or saying which fields to change). Bare values such as a name, customer, date, location, status, or notes are follow_up.
+- follow_up: the user is answering a pending question (filling a missing field, or saying which fields to change). Bare values such as a name, customer, date, location, or notes are follow_up, not get or unknown.
 - unknown: off-topic or unintelligible, and clearly not an answer to a pending question
 A customer or project name that happens to contain a verb is not an intent.
 Return only the intent. Do not invent a project action."""
@@ -31,7 +31,7 @@ def classify_system(
         extra = (
             f"\nCurrent dialogue: collecting a new project. Still missing: {missing}. "
             "If the user is supplying those values, return follow_up. "
-            "A bare value is follow_up, not unknown. "
+            "A bare value is follow_up, not get or unknown. "
             "If they start a different action, return that intent."
         )
     elif dialog_state == "disambiguating":

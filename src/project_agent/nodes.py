@@ -10,6 +10,7 @@ from project_agent.slots import (
     extract_target_name,
     extract_updates,
     fill_remaining,
+    looks_like_bare_value,
     merge_draft,
     missing_required,
     user_omitted_required,
@@ -25,6 +26,7 @@ _EXACT_COMMANDS = {
     "list projects": "list",
 }
 _CANCEL_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
+_BARE_VALUE_OVERRIDE = {"create", "get", "update", "delete", "unknown"}
 
 
 def _keyword_intent(text: str) -> str | None:
@@ -51,6 +53,13 @@ def classify_intent(
         pending_action=pending_action,
     )
     if dialog_state == "collecting" and pending_action == "update" and intent == "update":
+        return "follow_up"
+    if (
+        dialog_state == "collecting"
+        and pending_action != "update"
+        and intent in _BARE_VALUE_OVERRIDE
+        and looks_like_bare_value(text)
+    ):
         return "follow_up"
     return intent
 

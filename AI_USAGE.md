@@ -58,7 +58,7 @@ specs/tasks.md ##Optional implementation steps
 
 - **Tools:** Cursor (Grok 4.6)
 - **How AI was used:** 
-Change the fill_remaining logic from ‘If exactly one required field is missing, treat the whole reply as that value’ to ‘Fill the one missing required field from a bare follow-up value only.’. The change as felllow:
+Change the fill_remaining logic from ‘If exactly one required field is missing, treat the whole reply as that value’ to ‘Fill the one missing required field from a bare follow-up value only.’. The change as follow:
 1. update prompts to teach model identifiy vlaue from sentence
 2. add hint for filter slots
 
@@ -69,3 +69,18 @@ I still need the customer name for this project.
 
 > the customer is Amy
 Done. Created project "Alpha" for the customer is Amy.
+
+## 4. Code Optimization&Fix 3
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:** 
+The promble is model cosider 'Acme' look like a project name, so the intent is mark as get.
+Make change : In collecting dialog_state, any looks like bare value would mark cover the intent as follow up even the model mark it as get / delete / unknown before. 
+
+- **Main prompt:** 
+llm do not correctly idenitfy intent in case:
+> create a project called Alpha
+I still need the customer name for this project.
+
+> Acme
+No project named "Acme" was found.
