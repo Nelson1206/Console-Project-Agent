@@ -14,7 +14,16 @@ from project_agent.slots import _is_blank_slot
 
 DEFAULT_MODEL = "llama3.2"
 DEFAULT_BASE_URL = "http://localhost:11434"
-ALLOWED_INTENTS = ("create", "list", "get", "update", "delete", "exit", "unknown")
+ALLOWED_INTENTS = (
+    "create",
+    "list",
+    "get",
+    "update",
+    "delete",
+    "exit",
+    "unknown",
+    "follow_up",
+)
 
 
 class LLMError(Exception):
@@ -27,7 +36,9 @@ class LLMError(Exception):
 
 
 class IntentClassification(BaseModel):
-    intent: Literal["create", "list", "get", "update", "delete", "exit", "unknown"]
+    intent: Literal[
+        "create", "list", "get", "update", "delete", "exit", "unknown", "follow_up"
+    ]
 
 
 class SlotExtraction(BaseModel):
@@ -50,19 +61,27 @@ def get_chat_model() -> ChatOllama:
     )
 
 
-def classify_with_llm(user_input: str) -> str:
+def classify_with_llm(
+    user_input: str,
+    *,
+    dialog_state: str = "idle",
+    missing_fields: list[str] | None = None,
+    pending_action: str = "",
+) -> str:
     try:
         result = _invoke_structured(
             IntentClassification,
-            prompts.CLASSIFY_SYSTEM,
+            prompts.classify_system(dialog_state, missing_fields, pending_action),
             user_input,
         )
     except LLMError as exc:
         if exc.parse_failure:
-            return "unknown"
+            return "follow_up" if dialog_state == "collecting" else "unknown"
         raise
-    intent = result.intent
-    return intent if intent in ALLOWED_INTENTS else "unknown"
+    intent = result.intent if result.intent in ALLOWED_INTENTS else "unknown"
+    if intent == "follow_up" and dialog_state != "collecting":
+        return "unknown"
+    return intent
 
 
 def extract_with_llm(user_input: str) -> dict[str, str]:

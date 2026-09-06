@@ -119,7 +119,7 @@ flowchart TD
 ```
 
 
-1. `classify` routes the line to `create`, `list`, `get`, `update`, `delete`, `exit`, or `unknown`.
+1. `classify` sends each line through the Ollama classifier, including follow-up turns. It routes to `create`, `list`, `get`, `update`, `delete`, `exit`, `follow_up`, or `unknown`. Bare values such as `Acme` stay `follow_up`; a new action or an off-topic line cancels an unfinished draft.
 2. `create` goes to `extract_slots`. Required fields are `project_name` and `customer`. Optional fields (`start_date`, `location`, `status`, `notes`) are stored only if they appear in the sentence. Missing required fields are listed in one follow-up; a later line can fill them. Any new intent cancels an unfinished draft.
 3. `list` reads `data/projects.json` and prints a numbered list, or says that no projects exist.
 4. `get` / `update` / `delete` look up by project name (case-insensitive). One match runs the action. Several matches are disambiguated by number. Zero matches return `No project named "..." was found.` Delete does not ask for confirmation.

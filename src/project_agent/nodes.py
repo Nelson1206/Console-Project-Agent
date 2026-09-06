@@ -24,30 +24,48 @@ _EXACT_COMMANDS = {
     "exit": "exit",
     "list projects": "list",
 }
-_NEW_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
+_CANCEL_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
 
 
 def _keyword_intent(text: str) -> str | None:
     return _EXACT_COMMANDS.get(text.casefold().strip())
 
 
-def classify_intent(user_input: str, dialog_state: str = "idle") -> str:
+def classify_intent(
+    user_input: str,
+    dialog_state: str = "idle",
+    *,
+    missing_fields: list[str] | None = None,
+    pending_action: str = "",
+) -> str:
     text = user_input.strip()
     if dialog_state == "disambiguating" and text.isdigit():
         return "disambiguation_choice"
     keyword = _keyword_intent(text)
     if keyword is not None:
         return keyword
-    if dialog_state == "collecting":
+    intent = classify_with_llm(
+        text,
+        dialog_state=dialog_state,
+        missing_fields=missing_fields,
+        pending_action=pending_action,
+    )
+    if dialog_state == "collecting" and pending_action == "update" and intent == "update":
         return "follow_up"
-    return classify_with_llm(text)
+    return intent
 
 
 def classify(state: AgentState) -> dict:
     dialog_state = state.get("dialog_state") or "idle"
     user_input = state.get("user_input") or ""
+    pending_action = state.get("pending_action") or ""
     try:
-        intent = classify_intent(user_input, dialog_state)
+        intent = classify_intent(
+            user_input,
+            dialog_state,
+            missing_fields=state.get("missing_fields") or [],
+            pending_action=pending_action,
+        )
     except LLMError as exc:
         return {
             "intent": "unknown",
@@ -70,7 +88,10 @@ def classify(state: AgentState) -> dict:
             result["selected_id"] = matches[index]["id"]
         else:
             result["selected_id"] = ""
-    if dialog_state in {"collecting", "disambiguating"} and intent in _NEW_INTENTS:
+    cancel = intent in _CANCEL_INTENTS
+    if dialog_state == "collecting" and pending_action == "update" and intent == "update":
+        cancel = False
+    if dialog_state in {"collecting", "disambiguating"} and cancel:
         result.update(
             {
                 "dialog_state": "idle",

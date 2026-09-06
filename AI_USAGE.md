@@ -42,3 +42,16 @@ specs/tasks.md ##Optional implementation steps
 - **Tools:** Cursor (Grok 4.6)
 - **How AI was used:** Implement and test code by task
 - **Main prompt:** Implement {task id from 'tasks'}
+
+
+## 3. Code Optimization&Fix
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:** 
+1. Add 'follow_up' to llm's intent classification set.
+2. Update prompt for teach model how classify intent 'follow up'
+3. change classify node to use llm classify for follow up
+4. only keep update use origin classify
+- **Main prompt:** when collecting classify_intent, return directly to follow_up. please use classify_with_llm to allow change intent on follow_up state.
+
+
