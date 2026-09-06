@@ -175,31 +175,37 @@ Here are your projects (2):
 ### 2. Missing field follow-up
 
 ```text
-> Can you create a project
-I still need the project name and the customer to create this project.
+> create a project called Delta
+I still need the customer name for this project.
 
-> Can you create a proejct called GAMMA
+> Acme
+Done. Created project "Delta" for customer Acme.
+
+> create a project called GAMMA
 I still need the customer name for this project.
 
 > the customer is Amy
 Done. Created project "GAMMA" for customer Amy.
 ```
 
-### 3. Delete when two projects share a name
+### 3. Update Project
 
 ```text
-> list projects      
-Here are your projects (4):
-1. Alpha — customer: Acme
-2. Beta — customer: Globex
-3. GAMMA — customer: Amy
-4. Alpha — customer: Globex
+> update GAMMA
+Multiple projects named "GAMMA" were found. Reply with a number:
+1. GAMMA — customer: Amy — id: 768b5a08-c717-4041-8700-1f0418a6a25f
+2. Gamma — customer: Initech — id: b3af5a37-bcff-486e-bbe9-6155261855a8
+3. Gamma — customer: Initech — id: 43986c41-43aa-4a8f-bb16-92aa56f0b113
 
-> delete Alpha 
-Multiple projects named "Alpha" were found. Reply with a number:
-1. Alpha — customer: Acme — id: 6c88fc7b-4591-4cc9-b7bc-1347860ebdec
-2. Alpha — customer: Globex — id: 2cc759d9-928f-45ca-8dbf-f600cd30421c
+> 2                         
+Which fields should I update? You can change project name, customer, start date, location, status, or notes.
 
-> 2      
-Done. Deleted project "Alpha" for customer Globex (id: 2cc759d9-928f-45ca-8dbf-f600cd30421c).
+> change customer to tester
+Done. Updated project "Gamma" (id: b3af5a37-bcff-486e-bbe9-6155261855a8): customer -> tester
+
+> update Beta  
+Which fields should I update? You can change project name, customer, start date, location, status, or notes.
+
+> change the location to Hong Kong
+Done. Updated project "Beta" (id: 19025305-9849-4feb-9d5e-6e1d7797370d): location -> Hong Kong
 ```
