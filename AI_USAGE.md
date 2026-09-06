@@ -54,4 +54,18 @@ specs/tasks.md ##Optional implementation steps
 4. only keep update use origin classify
 - **Main prompt:** when collecting classify_intent, return directly to follow_up. please use classify_with_llm to allow change intent on follow_up state.
 
+## 4. Code Optimization&Fix 2
 
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:** 
+Change the fill_remaining logic from ‘If exactly one required field is missing, treat the whole reply as that value’ to ‘Fill the one missing required field from a bare follow-up value only.’. The change as felllow:
+1. update prompts to teach model identifiy vlaue from sentence
+2. add hint for filter slots
+
+- **Main prompt:** 
+currently, agenet can not identifiy the real value should extracat on fill remaining field, the following is an example:
+> create a project called Alpha
+I still need the customer name for this project.
+
+> the customer is Amy
+Done. Created project "Alpha" for the customer is Amy.
