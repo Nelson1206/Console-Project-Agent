@@ -99,7 +99,7 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Completion checklist
 
-Verified 2026-09-05 against live Ollama `llama3.2`. Log: `logs/checklist-2026-09-05.md`.
+Verified 2026-09-05 against live Ollama `llama3.2`.
 
 - [x] AC-1 three replies match the assignment example verbatim
 - [x] Missing fields listed together; no partial writes (AC-2, AC-3)
