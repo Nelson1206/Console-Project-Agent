@@ -173,8 +173,8 @@ Do not implement an `OPENROUTER_API_KEY` path. `.env.example` and README list Ol
 
 ### 6.1 Calls
 
-- `classify`: structured output, enum `create`, `list`, `get`, `update`, `delete`, `exit`, `unknown`.
-- `extract_slots`: structured output; required fields may be null; optionals only when present. When merging into draft, do not clear already-filled fields that this turn did not mention.
+- `classify`: structured output, enum `create`, `list`, `get`, `update`, `delete`, `exit`, `unknown`, `follow_up`. The system prompt includes `dialog_state`, `missing_fields`, and `pending_action`. While collecting a create draft, a bare value (short, no intent verb or field label) is forced to `follow_up` even if the model returns `get`, `delete`, `create`, or `unknown`. While collecting an update, a model `update` is treated as `follow_up` so the locked target is kept.
+- `extract_slots`: structured output; required fields may be null; optionals only when present. When merging into draft, do not clear already-filled fields that this turn did not mention. `fill_remaining` may write a bare follow-up value into the one missing required field; it must not swallow commands, labeled clauses, or questions.
 - Prompts live in `prompts.py`, English, short, intents and fields only.
 
 ### 6.2 Failure

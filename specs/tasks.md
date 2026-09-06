@@ -63,7 +63,7 @@ Status: `- [ ]` todo; `- [x]` done.
 ## Phase 6 — Wire Ollama
 
 - [x] T-060 `llm.py` builds an Ollama ChatModel only
-- [x] T-061 classify structured output (including get/update/delete)
+- [x] T-061 classify structured output (including get/update/delete/`follow_up`; collecting turns still call the LLM)
 - [x] T-062 extract required + optional; do not clear filled fields this turn did not mention
 - [x] T-063 Ollama down / missing model → English error, stay in the loop
 - [x] T-064 Run AC-1 on a real model; reply bodies match verbatim
@@ -85,8 +85,11 @@ Status: `- [ ]` todo; `- [x]` done.
 - [x] T-080 Unparseable LLM output → unknown or one retry; do not crash
 - [x] T-081 StorageError → English message; do not overwrite a bad file
 - [x] T-082 Blank slot strings count as missing; keep asking
+- [x] T-083 Collecting classify goes through the LLM; a new intent cancels the draft (AC-9 beyond exact `list projects`)
+- [x] T-084 Bare follow-up values such as `Acme` stay `follow_up` even if the model returns `get`
+- [x] T-085 `fill_remaining` only accepts short bare values; labeled clauses extract the value only
 
-**Done when:** The process stays up on bad input / bad model / bad JSON.
+**Done when:** The process stays up on bad input / bad model / bad JSON. Follow-up turns can change intent without writing a dirty slot.
 
 ## Phase 9 — Submission docs
 
@@ -99,7 +102,7 @@ Status: `- [ ]` todo; `- [x]` done.
 
 ## Completion checklist
 
-Verified 2026-09-05 against live Ollama `llama3.2`.
+Verified 2026-09-06 against live Ollama `llama3.2` (including collecting classify, bare-value `Acme`, and labeled `the customer is Amy`).
 
 - [x] AC-1 three replies match the assignment example verbatim
 - [x] Missing fields listed together; no partial writes (AC-2, AC-3)
