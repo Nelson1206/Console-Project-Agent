@@ -88,21 +88,33 @@ Status: `- [ ]` todo; `- [x]` done.
 - [x] T-083 Collecting classify goes through the LLM; a new intent cancels the draft (AC-9 beyond exact `list projects`)
 - [x] T-084 Bare follow-up values such as `Acme` stay `follow_up` even if the model returns `get`
 - [x] T-085 `fill_remaining` only accepts short bare values; labeled clauses extract the value only
+- [x] T-086 Remove classify keyword shortcuts; `list projects` goes through the LLM (`quit` / `exit` stay in the REPL)
+- [x] T-087 Extract is LLM-first; `extract_locked` only covers assignment phrases and labeled `field is/to` updates
+- [x] T-088 While collecting an update with a locked target, a labeled change is `follow_up` (do not re-lookup a project name)
 
 **Done when:** The process stays up on bad input / bad model / bad JSON. Follow-up turns can change intent without writing a dirty slot.
 
 ## Phase 9 — Submission docs
 
 - [x] T-090 README: install, **Ollama only**, verified model name, single start command, short LangGraph write-up
-- [x] T-091 README may include 2–3 real sessions (at least AC-1; follow-up and delete disambiguation recommended)
+- [x] T-091 README includes 2–3 real sessions (AC-1, missing-field follow-up including bare `Acme` / labeled customer, and update + name collision)
 - [X] T-092 `AI_USAGE.md` (Cursor was used; this file is required)
 - [X] T-093 Walk AC-7 from a clean environment using only the README
 
 **Done when:** A reviewer can accept without a cloud key and without asking questions.
 
+## Phase 10 — Graph-route tests
+
+- [x] T-100 `tests/cases/` data-driven harness; mocks classify / extract; does not call Ollama
+- [x] T-101 Official command `python -m tests`; reports in `tests/reports/`; optional `pip install -e ".[test]"`
+- [x] T-102 `tests/README.md` documents schema and how to add a case; root README links it
+- [x] T-103 Cases cover create / follow-up / list / get / update / delete / disambiguation / choice / errors
+
+**Done when:** `python -m tests` is green without a running Ollama.
+
 ## Completion checklist
 
-Verified 2026-09-06 against live Ollama `llama3.2` (including collecting classify, bare-value `Acme`, and labeled `the customer is Amy`).
+Verified 2026-09-06 against live Ollama `llama3.2` (including collecting classify, bare-value `Acme`, and labeled `the customer is Amy`). Graph routes: `python -m tests` (see `tests/reports/latest.md`).
 
 - [x] AC-1 three replies match the assignment example verbatim
 - [x] Missing fields listed together; no partial writes (AC-2, AC-3)
@@ -115,3 +127,4 @@ Verified 2026-09-06 against live Ollama `llama3.2` (including collecting classif
 - [x] get / collision disambiguation / update / delete / not found (AC-11–AC-15)
 - [x] README covers Ollama only; `requirements.txt` and `AI_USAGE.md` exist
 - [x] Routing goes through LangGraph; code is modular
+- [x] `python -m tests` covers graph routes without calling Ollama

@@ -81,19 +81,47 @@ specs/tasks.md ## Optional implementation steps
   > Acme
   No project named "Acme" was found.
 
-## 6. Quick Test Tool
+## 6. Graph-route test harness
 
 - **Tools:** Cursor (Grok 4.6)
 - **How AI was used:**
- Added a graph-route test harness. Each folder under `tests/cases/` is one path; JSON files in that folder are the turns. Reports are written to `tests/reports/`.
+  Added a data-driven graph-route harness. Each folder under `tests/cases/` is one LangGraph path; each JSON file is one turn. Classify and extract are mocked (Ollama is not called). Reports go to `tests/reports/`. Official command: `python -m tests`.
 - **Main prompt:**
-Build a test script that walks the graph through different routes. Use this layout:
-tests/
-├── cases/
-│   ├── name_of_the_path1/
-│   │   └── (json files)
-│   └── name_of_the_path2/
-│       └── (json files)
-├── reports/
-│   └── (report files)
-└── (scripts that run the tests)
+  Build a test script that walks the graph through different routes. Use this layout:
+
+  ```text
+  tests/
+  ├── cases/
+  │   ├── name_of_the_path1/
+  │   │   └── (json files)
+  │   └── name_of_the_path2/
+  │       └── (json files)
+  ├── reports/
+  │   └── (report files)
+  └── (scripts that run the tests)
+  ```
+
+## 7. Classify and extract: LLM as the main path
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:**
+  1. Removed the classify keyword table (`list projects` / `quit` / `exit` no longer skip the model). `quit` / `exit` still end the process in the REPL before the graph.
+  2. Made slot extraction LLM-first. `extract_locked` only keeps assignment phrases (`called X for customer Y`, `project X for Y`) and labeled `field is/to` updates. Wide optional-field regex was removed so location / status come from the model.
+- **Main prompt:**
+  Fix: `quit` / `exit` / `list projects` are still keyword shortcuts. `slots.py` regex still overwrites the LLM on merge. A reviewer who only looks at extraction will think rules do most of the work.
+
+## 8. Labeled update follow-up
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:**
+  While `dialog_state` is `collecting` and an update target is already locked (`pending_action == update` or `selected_id` is set), a labeled change such as `customer to Initech` is classified as `follow_up` before the LLM is called. That stops the model from treating the new value as a project name and looking up the wrong record.
+- **Main prompt:**
+  After `update GAMMA` and a disambiguation number, `change customer to tester` must update the selected project. Do not resolve a new target from the follow-up sentence.
+
+## 9. Spec and README updates
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:**
+  After the later classify / extract / test changes, checked the docs against the code and updated `specs/plan.md`, `specs/tasks.md`, and `README.md` (workflow, sessions, test commands). `tests/README.md` documents the case schema.
+- **Main prompt:**
+  Check the spec documents and README. Keep them up to date with the current progress. 

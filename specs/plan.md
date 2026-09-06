@@ -29,6 +29,12 @@ src/project_agent/
     storage.py
     llm.py
     prompts.py
+    slots.py
+    replies.py
+    state.py
+tests/
+    cases/
+    README.md
 data/projects.json
 .env.example
 requirements.txt
@@ -72,7 +78,7 @@ Shared `resolve_target` for get / update / delete:
 | Node | Responsibility | Side effect |
 | --- | --- | --- |
 | `classify` | Produce intent; while `collecting` / `disambiguating`, decide new intent vs slot fill / number | none |
-| `extract_slots` | Extract required + optional fields, merge into draft, compute `missing_fields` | none |
+| `extract_slots` | LLM-first extract; lock assignment phrases; merge into draft; compute `missing_fields` | none |
 | `ask_followup` | List all missing fields (fixed English sentences) | none |
 | `create_project` | Build `Project` and append | write JSON |
 | `list_projects` | Format from file; empty file uses the fixed empty text | read JSON |
@@ -82,6 +88,7 @@ Shared `resolve_target` for get / update / delete:
 | `update_project` | Merge fields | write JSON |
 | `delete_project` | Remove that `id` | write JSON |
 | `clarify_message` | Fixed unknown text | none |
+| `llm_error` | Keep the English `reply` already set by classify / extract / resolve | none |
 | `exit_node` | `should_exit=True`, reply `Goodbye.` | none |
 
 ### 3.2 Conditional edges
@@ -94,6 +101,7 @@ From `classify`:
 - `disambiguation_choice` → get/update/delete according to `pending_action`
 - `exit` → `exit_node`
 - `unknown` → `clarify_message`
+- `llm_error` → `llm_error` (classify / extract / resolve already set the English reply)
 
 From `extract_slots`: empty `missing_fields` → `create_project`, else `ask_followup`.
 
@@ -118,7 +126,7 @@ class AgentState(TypedDict, total=False):
     should_exit: bool
 ```
 
-Persist across turns only: `dialog_state`, `draft`, `updates`, `pending_action`, `pending_matches`.  
+Persist across turns only: `dialog_state`, `draft`, `updates`, `pending_action`, `pending_matches`, `selected_id`, `lookup_name`, `missing_fields`.  
 The project list is owned by the JSON file, not long-lived in State.
 
 ## 5. JSON schema
@@ -173,7 +181,7 @@ Do not implement an `OPENROUTER_API_KEY` path. `.env.example` and README list Ol
 
 ### 6.1 Calls
 
-- `classify`: structured output, enum `create`, `list`, `get`, `update`, `delete`, `exit`, `unknown`, `follow_up`. The system prompt includes `dialog_state`, `missing_fields`, and `pending_action`. While collecting a create draft, a bare value (short, no intent verb or field label) is forced to `follow_up` even if the model returns `get`, `delete`, `create`, or `unknown`. While collecting an update, a model `update` is treated as `follow_up` so the locked target is kept.
+- `classify`: structured output, enum `create`, `list`, `get`, `update`, `delete`, `exit`, `unknown`, `follow_up`. There is no keyword table for `list projects` / `quit` / `exit`. The system prompt includes `dialog_state`, `missing_fields`, and `pending_action`. While collecting a create draft, a bare value (short, no intent verb or field label) is forced to `follow_up` even if the model returns `get`, `delete`, `create`, or `unknown`. While collecting an update (or a `selected_id` is already locked), a labeled field change such as `customer to X` is `follow_up` before the LLM is called; a model `update` is also treated as `follow_up` so the target is kept.
 - `extract_slots`: structured output is the primary extractor; required fields may be null; optionals only when present. A regex lock applies only to the assignment phrases `called X for customer Y`, `project X for Y`, and labeled `field is/to` updates; on those keys the lock wins. When merging into draft, do not clear already-filled fields that this turn did not mention. `fill_remaining` may write a bare follow-up value into the one missing required field; it must not swallow commands, labeled clauses, or questions.
 - Prompts live in `prompts.py`, English, short, intents and fields only.
 
@@ -234,14 +242,14 @@ This must produce the two AC-1 lines verbatim (no quotes around customer; quotes
 
 Do not list OpenAI / OpenRouter packages. Test libraries are not required to run the app.
 
-## 9. Test strategy (recommended, not required)
+## 9. Test strategy
 
-Storage, draft merge, same-name `get_by_name`, and fixed-string formatters can be unit-tested. Fake the LLM. Tests must not block the done line.
+Graph-route cases live under `tests/cases/`. Each folder is one LangGraph path; each JSON file is one turn. The runner mocks classify and extract (does **not** call Ollama), invokes the compiled graph, and writes `tests/reports/latest.md`. Official command: `python -m tests`. Optional pytest extra: `pip install -e ".[test]"`. Tests must not block running the app. Live model behaviour is checked by hand against README sessions.
 
 ## 10. README workflow blurb
 
-> Each line of input is handled by a LangGraph. A classify node routes to create, list, get, update, delete, exit, or unknown. Create extracts project_name and customer (plus optional fields if present); missing required fields are listed in one follow-up. Get/update/delete look up by project name; duplicates are disambiguated by number. Successful writes go to data/projects.json. The model is served by local Ollama.
+> Each line of input is one LangGraph turn. A classify node (Ollama structured output) routes to create, list, get, update, delete, follow_up, exit, or unknown. Slot extraction is LLM-first; a small lock keeps the assignment phrases. Missing required fields are listed in one follow-up; a new intent cancels an unfinished draft. Get/update/delete look up by project name; duplicates are disambiguated by number. Successful writes go to data/projects.json. The model is served by local Ollama.
 
 ## 11. Implementation order
 
-Skeleton → JSON → graph (stubs OK) → create/list/REPL → wire Ollama → get/update/delete and optional fields → lock English copy to AC-1 → docs. See `tasks.md`.
+Skeleton → JSON → graph (stubs OK) → create/list/REPL → wire Ollama → get/update/delete and optional fields → lock English copy to AC-1 → follow-up classify guards → graph-route tests → docs. See `tasks.md`.
