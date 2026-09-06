@@ -20,12 +20,15 @@ _FIELD_LABELS = {
     "note": "notes",
 }
 
+# Stop before optional phrases so the lock does not swallow location / status / notes.
+_OPTIONAL_TAIL = r"(?=\s+in\b|\s+with\s+status\b|\s+start|\s+notes?\b|$)"
+
 _CALLED = re.compile(
-    r"\bcalled\s+(?P<name>.+?)(?:\s+for(?:\s+customer)?\s+(?P<customer>.+))?$",
+    rf"\bcalled\s+(?P<name>.+?)(?:\s+for(?:\s+customer)?\s+(?P<customer>.+?))?{_OPTIONAL_TAIL}",
     re.IGNORECASE,
 )
 _PROJECT_FOR = re.compile(
-    r"\bproject(?:\s+called)?\s+(?P<name>.+?)\s+for(?:\s+customer)?\s+(?P<customer>.+)$",
+    rf"\bproject(?:\s+called)?\s+(?P<name>.+?)\s+for(?:\s+customer)?\s+(?P<customer>.+?){_OPTIONAL_TAIL}",
     re.IGNORECASE,
 )
 _TARGET = re.compile(

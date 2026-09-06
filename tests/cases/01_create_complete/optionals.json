@@ -2,7 +2,7 @@
   "id": "optionals",
   "description": "Create and persist optional location / status",
   "state": {
-    "user_input": "create a project called Gamma for customer Initech",
+    "user_input": "create a project called Gamma for customer Initech in London with status active",
     "dialog_state": "idle"
   },
   "llm": {
