@@ -170,7 +170,7 @@ Done. Created project "GAMMA" for customer Amy.
 Here are your projects (4):
 1. Alpha — customer: Acme
 2. Beta — customer: Globex
-3. GAMMA — customer: the customer is Amy
+3. GAMMA — customer: Amy
 4. Alpha — customer: Globex
 
 > delete Alpha 

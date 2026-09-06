@@ -52,6 +52,16 @@ _UPDATE = re.compile(
     r"(?=\s+(?:and|,)\s+(?:project\s*name|customer|status|location|notes?|start)|$)",
     re.I,
 )
+_INTENT_VERBS = re.compile(
+    r"\b(?:show|get|list|delete|update|create|remove|change)\b",
+    re.IGNORECASE,
+)
+_FIELD_LABEL_HINT = re.compile(
+    r"\bcalled\b|"
+    r"\b(?:customer|project\s*name|name|start\s*date|location|status|notes?)\s*(?:is|to|=|:)\b",
+    re.IGNORECASE,
+)
+_MAX_BARE_TOKENS = 4
 
 
 def _clean(value: str | None) -> str | None:
@@ -132,16 +142,29 @@ def missing_required(draft: dict) -> list[str]:
     return [name for name in _REQUIRED if not str(draft.get(name) or "").strip()]
 
 
+def _looks_like_bare_value(text: str) -> bool:
+    """True for a short slot answer such as Acme, not a command or labeled clause."""
+    tokens = text.split()
+    if not tokens or len(tokens) > _MAX_BARE_TOKENS:
+        return False
+    if _INTENT_VERBS.search(text) or _FIELD_LABEL_HINT.search(text):
+        return False
+    return True
+
+
 def fill_remaining(draft: dict, user_input: str) -> dict:
-    """If exactly one required field is missing, treat the whole reply as that value."""
+    """Fill the one missing required field from a bare follow-up value only."""
     missing = missing_required(draft)
     if len(missing) != 1:
         return draft
+    field = missing[0]
+    if str(draft.get(field) or "").strip():
+        return draft
     value = user_input.strip().strip("\"'")
-    if not value or _is_blank_slot(value):
+    if not value or _is_blank_slot(value) or not _looks_like_bare_value(value):
         return draft
     updated = dict(draft)
-    updated[missing[0]] = value
+    updated[field] = value
     return updated
 
 

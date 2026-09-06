@@ -48,4 +48,5 @@ Fields:
 - customer (required when creating)
 - start_date, location, status, notes (optional)
 Use null when a field is not clearly present. Do not invent values.
-If the user is only filling one missing field, put that value in the matching field."""
+If the user is only filling one missing field, put that value in the matching field.
+If the user says "the customer is X" or "called X", extract X only, not the whole clause."""
