@@ -30,10 +30,13 @@ def classify_intent(
     *,
     missing_fields: list[str] | None = None,
     pending_action: str = "",
+    selected_id: str = "",
 ) -> str:
     text = user_input.strip()
     if dialog_state == "disambiguating" and text.isdigit():
         return "disambiguation_choice"
+    if dialog_state == "collecting" and (pending_action == "update" or selected_id) and extract_updates(text):
+        return "follow_up"
     intent = classify_with_llm(
         text,
         dialog_state=dialog_state,
@@ -56,12 +59,14 @@ def classify(state: AgentState) -> dict:
     dialog_state = state.get("dialog_state") or "idle"
     user_input = state.get("user_input") or ""
     pending_action = state.get("pending_action") or ""
+    selected_id = state.get("selected_id") or ""
     try:
         intent = classify_intent(
             user_input,
             dialog_state,
             missing_fields=state.get("missing_fields") or [],
             pending_action=pending_action,
+            selected_id=selected_id,
         )
     except LLMError as exc:
         return {
@@ -85,6 +90,16 @@ def classify(state: AgentState) -> dict:
             result["selected_id"] = matches[index]["id"]
         else:
             result["selected_id"] = ""
+    if intent == "follow_up" and (pending_action == "update" or selected_id):
+        result.update(
+            {
+                "pending_action": pending_action or "update",
+                "selected_id": selected_id,
+                "pending_matches": state.get("pending_matches") or [],
+                "updates": state.get("updates") or {},
+                "lookup_name": state.get("lookup_name") or "",
+            }
+        )
     cancel = intent in _CANCEL_INTENTS
     if dialog_state == "collecting" and pending_action == "update" and intent == "update":
         cancel = False
@@ -248,7 +263,7 @@ def resolve_target(state: AgentState) -> dict:
 
     if action == "update":
         updates.update(extract_updates(user_input))
-        if selected_id and intent == "follow_up":
+        if selected_id:
             return {
                 "last_node": "resolve_target",
                 "pending_action": "update",

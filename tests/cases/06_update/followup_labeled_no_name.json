@@ -1,0 +1,36 @@
+{
+  "id": "followup_labeled_no_name",
+  "description": "Labeled field follow-up must not re-lookup a project name",
+  "state": {
+    "user_input": "customer to Initech",
+    "dialog_state": "collecting",
+    "pending_action": "update",
+    "selected_id": "id-beta-globex",
+    "lookup_name": "Beta"
+  },
+  "llm": {
+    "classify": "update",
+    "extract": {
+      "project_name": "Initech"
+    }
+  },
+  "seed_projects": [
+    {
+      "id": "id-beta-globex",
+      "project_name": "Beta",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "update_project",
+    "intent": "follow_up",
+    "reply": "Done. Updated project \"Beta\" (id: id-beta-globex): customer -> Initech",
+    "storage_has": [
+      {
+        "project_name": "Beta",
+        "customer": "Initech"
+      }
+    ]
+  }
+}
