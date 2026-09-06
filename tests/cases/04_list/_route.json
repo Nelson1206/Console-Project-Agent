@@ -1,0 +1,9 @@
+{
+  "route_id": "04_list",
+  "title": "List: classify -> list_projects",
+  "path": [
+    "classify",
+    "list_projects"
+  ],
+  "description": "List: classify -> list_projects"
+}

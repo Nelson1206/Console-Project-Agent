@@ -1,0 +1,49 @@
+{
+  "id": "pick_1_with_updates",
+  "description": "Existing updates; choosing 1 updates immediately",
+  "state": {
+    "user_input": "1",
+    "dialog_state": "disambiguating",
+    "pending_action": "update",
+    "updates": {
+      "customer": "Initech"
+    },
+    "pending_matches": [
+      {
+        "id": "id-alpha-acme",
+        "project_name": "Alpha",
+        "customer": "Acme"
+      },
+      {
+        "id": "id-alpha-globex",
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ],
+    "lookup_name": "Alpha"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "id-alpha-globex",
+      "project_name": "Alpha",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:01+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "update_project",
+    "reply": "Done. Updated project \"Alpha\" (id: id-alpha-acme): customer -> Initech",
+    "storage_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Initech"
+      }
+    ]
+  }
+}

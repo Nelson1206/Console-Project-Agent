@@ -1,0 +1,15 @@
+{
+  "id": "get_zeta",
+  "description": "get Zeta when no such project exists",
+  "state": {
+    "user_input": "get Zeta",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "get"
+  },
+  "expect": {
+    "last_node": "not_found",
+    "reply": "No project named \"Zeta\" was found."
+  }
+}

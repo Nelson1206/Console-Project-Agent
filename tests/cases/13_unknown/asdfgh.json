@@ -1,0 +1,16 @@
+{
+  "id": "asdfgh",
+  "description": "Unintelligible input",
+  "state": {
+    "user_input": "asdfgh",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "unknown"
+  },
+  "expect": {
+    "last_node": "clarify_message",
+    "reply": "I didn't understand that. You can create, list, show, update, or delete projects. Type quit or exit to leave.",
+    "should_exit": false
+  }
+}

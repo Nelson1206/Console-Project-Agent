@@ -1,0 +1,10 @@
+{
+  "route_id": "02_create_followup",
+  "title": "Create missing fields: classify -> extract_slots -> ask_followup",
+  "path": [
+    "classify",
+    "extract_slots",
+    "ask_followup"
+  ],
+  "description": "Create missing fields: classify -> extract_slots -> ask_followup"
+}

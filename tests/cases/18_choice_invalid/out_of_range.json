@@ -1,0 +1,43 @@
+{
+  "id": "out_of_range",
+  "description": "Number 9 is out of range; ask again",
+  "state": {
+    "user_input": "9",
+    "dialog_state": "disambiguating",
+    "pending_action": "delete",
+    "pending_matches": [
+      {
+        "id": "id-alpha-acme",
+        "project_name": "Alpha",
+        "customer": "Acme"
+      },
+      {
+        "id": "id-alpha-globex",
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ],
+    "lookup_name": "Alpha"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "id-alpha-globex",
+      "project_name": "Alpha",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:01+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "ask_disambiguation",
+    "dialog_state": "disambiguating",
+    "selected_id": "",
+    "reply": "Multiple projects named \"Alpha\" were found. Reply with a number:\n1. Alpha — customer: Acme — id: id-alpha-acme\n2. Alpha — customer: Globex — id: id-alpha-globex",
+    "storage_count": 2
+  }
+}

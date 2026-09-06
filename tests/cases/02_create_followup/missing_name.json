@@ -1,0 +1,22 @@
+{
+  "id": "missing_name",
+  "description": "Customer only; ask for project name",
+  "state": {
+    "user_input": "create a project for customer Acme",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {
+      "customer": "Acme"
+    }
+  },
+  "expect": {
+    "last_node": "ask_followup",
+    "missing_fields": [
+      "project_name"
+    ],
+    "reply": "I still need the project name for this project.",
+    "storage_count": 0
+  }
+}

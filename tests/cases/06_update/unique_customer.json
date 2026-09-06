@@ -1,0 +1,36 @@
+{
+  "id": "unique_customer",
+  "description": "update Alpha customer to Globex",
+  "state": {
+    "user_input": "update Alpha customer to Globex",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "update"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "update_project",
+    "dialog_state": "idle",
+    "reply": "Done. Updated project \"Alpha\" (id: id-alpha-acme): customer -> Globex",
+    "storage_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ],
+    "storage_not_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Acme"
+      }
+    ]
+  }
+}

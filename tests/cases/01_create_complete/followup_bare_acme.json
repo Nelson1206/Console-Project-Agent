@@ -1,0 +1,24 @@
+{
+  "id": "followup_bare_acme",
+  "description": "Bare value Acme stays follow_up even if the LLM returns get",
+  "state": {
+    "user_input": "Acme",
+    "dialog_state": "collecting",
+    "draft": {
+      "project_name": "Alpha"
+    },
+    "missing_fields": [
+      "customer"
+    ]
+  },
+  "llm": {
+    "classify": "get",
+    "extract": {}
+  },
+  "expect": {
+    "last_node": "create_project",
+    "intent": "follow_up",
+    "reply": "Done. Created project \"Alpha\" for customer Acme.",
+    "storage_count": 1
+  }
+}

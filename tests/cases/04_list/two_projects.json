@@ -1,0 +1,29 @@
+{
+  "id": "two_projects",
+  "description": "Golden-path list of two projects",
+  "state": {
+    "user_input": "list projects",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "list"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "id-beta-globex",
+      "project_name": "Beta",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:02+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "list_projects",
+    "reply": "Here are your projects (2):\n1. Alpha — customer: Acme\n2. Beta — customer: Globex"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "followup_customer",
+  "description": "Finish create after filling customer",
+  "state": {
+    "user_input": "the customer is Amy",
+    "dialog_state": "collecting",
+    "draft": {
+      "project_name": "GAMMA"
+    },
+    "missing_fields": [
+      "customer"
+    ]
+  },
+  "llm": {
+    "classify": "follow_up",
+    "extract": {
+      "customer": "Amy"
+    }
+  },
+  "expect": {
+    "last_node": "create_project",
+    "dialog_state": "idle",
+    "reply": "Done. Created project \"GAMMA\" for customer Amy.",
+    "storage_count": 1,
+    "storage_has": [
+      {
+        "project_name": "GAMMA",
+        "customer": "Amy"
+      }
+    ]
+  }
+}

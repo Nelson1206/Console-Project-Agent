@@ -1,0 +1,31 @@
+{
+  "id": "unique_alpha",
+  "description": "delete Alpha with no confirmation",
+  "state": {
+    "user_input": "delete Alpha",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "delete"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "delete_project",
+    "dialog_state": "idle",
+    "reply": "Done. Deleted project \"Alpha\" for customer Acme (id: id-alpha-acme).",
+    "storage_count": 0,
+    "storage_not_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Acme"
+      }
+    ]
+  }
+}

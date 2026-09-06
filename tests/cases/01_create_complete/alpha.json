@@ -1,0 +1,27 @@
+{
+  "id": "alpha",
+  "description": "Create Alpha / Acme in one sentence (assignment golden path)",
+  "state": {
+    "user_input": "create a project called Alpha for customer Acme",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {
+      "project_name": "Alpha",
+      "customer": "Acme"
+    }
+  },
+  "expect": {
+    "last_node": "create_project",
+    "dialog_state": "idle",
+    "reply": "Done. Created project \"Alpha\" for customer Acme.",
+    "storage_count": 1,
+    "storage_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Acme"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "storage_error",
+  "description": "Create fails on corrupt JSON and does not overwrite the file",
+  "state": {
+    "user_input": "create a project called Alpha for customer Acme",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {
+      "project_name": "Alpha",
+      "customer": "Acme"
+    }
+  },
+  "corrupt_store": true,
+  "expect": {
+    "last_node": "create_project",
+    "reply": "I could not save the project. The data file may be corrupt."
+  }
+}

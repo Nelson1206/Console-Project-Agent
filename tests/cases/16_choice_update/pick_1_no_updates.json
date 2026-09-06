@@ -1,0 +1,44 @@
+{
+  "id": "pick_1_no_updates",
+  "description": "No updates after the choice; update node asks which fields",
+  "state": {
+    "user_input": "1",
+    "dialog_state": "disambiguating",
+    "pending_action": "update",
+    "pending_matches": [
+      {
+        "id": "id-alpha-acme",
+        "project_name": "Alpha",
+        "customer": "Acme"
+      },
+      {
+        "id": "id-alpha-globex",
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ],
+    "lookup_name": "Alpha"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "id-alpha-globex",
+      "project_name": "Alpha",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:01+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "ask_followup",
+    "dialog_state": "collecting",
+    "pending_action": "update",
+    "selected_id": "id-alpha-acme",
+    "reply": "Which fields should I update? You can change project name, customer, start date, location, status, or notes.",
+    "storage_count": 2
+  }
+}

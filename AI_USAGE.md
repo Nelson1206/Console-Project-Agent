@@ -80,3 +80,20 @@ specs/tasks.md ## Optional implementation steps
 
   > Acme
   No project named "Acme" was found.
+
+## 6. Quick Test Tool
+
+- **Tools:** Cursor (Grok 4.6)
+- **How AI was used:**
+ Added a graph-route test harness. Each folder under `tests/cases/` is one path; JSON files in that folder are the turns. Reports are written to `tests/reports/`.
+- **Main prompt:**
+Build a test script that walks the graph through different routes. Use this layout:
+tests/
+├── cases/
+│   ├── name_of_the_path1/
+│   │   └── (json files)
+│   └── name_of_the_path2/
+│       └── (json files)
+├── reports/
+│   └── (report files)
+└── (scripts that run the tests)

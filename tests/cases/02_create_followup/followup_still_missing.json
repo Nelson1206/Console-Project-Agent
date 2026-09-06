@@ -1,0 +1,27 @@
+{
+  "id": "followup_still_missing",
+  "description": "Follow-up turn still missing customer",
+  "state": {
+    "user_input": "what should I say?",
+    "dialog_state": "collecting",
+    "draft": {
+      "project_name": "Alpha"
+    },
+    "missing_fields": [
+      "customer"
+    ]
+  },
+  "llm": {
+    "classify": "follow_up",
+    "extract": {}
+  },
+  "expect": {
+    "last_node": "ask_followup",
+    "dialog_state": "collecting",
+    "missing_fields": [
+      "customer"
+    ],
+    "reply": "I still need the customer name for this project.",
+    "storage_count": 0
+  }
+}

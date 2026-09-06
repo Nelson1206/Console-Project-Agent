@@ -1,0 +1,10 @@
+{
+  "route_id": "05_get",
+  "title": "Get unique match: classify -> resolve_target -> get_project",
+  "path": [
+    "classify",
+    "resolve_target",
+    "get_project"
+  ],
+  "description": "Get unique match: classify -> resolve_target -> get_project"
+}

@@ -1,0 +1,54 @@
+{
+  "id": "pick_2",
+  "description": "Reply 2 deletes the second Alpha",
+  "state": {
+    "user_input": "2",
+    "dialog_state": "disambiguating",
+    "pending_action": "delete",
+    "pending_matches": [
+      {
+        "id": "id-alpha-acme",
+        "project_name": "Alpha",
+        "customer": "Acme"
+      },
+      {
+        "id": "id-alpha-globex",
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ],
+    "lookup_name": "Alpha"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    },
+    {
+      "id": "id-alpha-globex",
+      "project_name": "Alpha",
+      "customer": "Globex",
+      "created_at": "2026-01-01T00:00:01+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "delete_project",
+    "dialog_state": "idle",
+    "reply": "Done. Deleted project \"Alpha\" for customer Globex (id: id-alpha-globex).",
+    "storage_count": 1,
+    "storage_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Acme"
+      }
+    ],
+    "storage_not_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ]
+  }
+}

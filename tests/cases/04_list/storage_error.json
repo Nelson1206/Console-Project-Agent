@@ -1,0 +1,16 @@
+{
+  "id": "storage_error",
+  "description": "List fails on corrupt JSON",
+  "state": {
+    "user_input": "list projects",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "list"
+  },
+  "corrupt_store": true,
+  "expect": {
+    "last_node": "list_projects",
+    "reply": "I could not read the project data file. It may be corrupt."
+  }
+}

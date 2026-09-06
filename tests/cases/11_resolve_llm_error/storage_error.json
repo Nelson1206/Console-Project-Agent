@@ -1,0 +1,17 @@
+{
+  "id": "storage_error",
+  "description": "Resolve fails on corrupt JSON",
+  "state": {
+    "user_input": "show project Alpha",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "get"
+  },
+  "corrupt_store": true,
+  "expect": {
+    "last_node": "llm_error",
+    "llm_error": true,
+    "reply": "I could not read the project data file. It may be corrupt."
+  }
+}

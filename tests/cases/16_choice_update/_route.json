@@ -1,0 +1,9 @@
+{
+  "route_id": "16_choice_update",
+  "title": "Disambiguation choice update: classify -> update_project",
+  "path": [
+    "classify",
+    "update_project"
+  ],
+  "description": "Disambiguation choice update: classify -> update_project"
+}

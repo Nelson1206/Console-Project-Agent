@@ -1,0 +1,15 @@
+{
+  "id": "weather",
+  "description": "Off-topic weather question",
+  "state": {
+    "user_input": "what is the weather",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "unknown"
+  },
+  "expect": {
+    "last_node": "clarify_message",
+    "reply": "I didn't understand that. You can create, list, show, update, or delete projects. Type quit or exit to leave."
+  }
+}

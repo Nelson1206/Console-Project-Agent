@@ -1,0 +1,16 @@
+{
+  "id": "exit",
+  "description": "LLM classifies the line as exit",
+  "state": {
+    "user_input": "I want to leave",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "exit"
+  },
+  "expect": {
+    "last_node": "exit_node",
+    "should_exit": true,
+    "reply": "Goodbye."
+  }
+}

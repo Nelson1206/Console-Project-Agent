@@ -1,0 +1,22 @@
+{
+  "id": "missing_both",
+  "description": "Both required fields missing; ask for them together",
+  "state": {
+    "user_input": "create a project",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {}
+  },
+  "expect": {
+    "last_node": "ask_followup",
+    "dialog_state": "collecting",
+    "missing_fields": [
+      "project_name",
+      "customer"
+    ],
+    "reply": "I still need the project name and the customer to create this project.",
+    "storage_count": 0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "route_id": "12_exit",
+  "title": "Exit: classify -> exit_node",
+  "path": [
+    "classify",
+    "exit_node"
+  ],
+  "description": "Exit: classify -> exit_node"
+}

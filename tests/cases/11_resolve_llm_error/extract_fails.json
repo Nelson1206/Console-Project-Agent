@@ -1,0 +1,18 @@
+{
+  "id": "extract_fails",
+  "description": "No extractable name; extract LLM fails",
+  "state": {
+    "user_input": "please fetch the first one",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "get",
+    "extract_error": true,
+    "extract_error_message": "I could not reach Ollama at the configured URL. Start Ollama and try again."
+  },
+  "expect": {
+    "last_node": "llm_error",
+    "llm_error": true,
+    "reply": "I could not reach Ollama at the configured URL. Start Ollama and try again."
+  }
+}

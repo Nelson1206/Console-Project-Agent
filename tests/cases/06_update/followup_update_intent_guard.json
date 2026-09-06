@@ -1,0 +1,33 @@
+{
+  "id": "followup_update_intent_guard",
+  "description": "While collecting an update, LLM update is treated as follow_up on the selected target",
+  "state": {
+    "user_input": "customer to Globex",
+    "dialog_state": "collecting",
+    "pending_action": "update",
+    "selected_id": "id-alpha-acme",
+    "lookup_name": "Alpha"
+  },
+  "llm": {
+    "classify": "update"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "update_project",
+    "intent": "follow_up",
+    "reply_contains": "customer -> Globex",
+    "storage_has": [
+      {
+        "project_name": "Alpha",
+        "customer": "Globex"
+      }
+    ]
+  }
+}

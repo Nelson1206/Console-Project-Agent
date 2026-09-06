@@ -1,0 +1,9 @@
+{
+  "route_id": "17_choice_delete",
+  "title": "Disambiguation choice delete: classify -> delete_project",
+  "path": [
+    "classify",
+    "delete_project"
+  ],
+  "description": "Disambiguation choice delete: classify -> delete_project"
+}

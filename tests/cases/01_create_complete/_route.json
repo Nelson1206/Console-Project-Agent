@@ -1,0 +1,10 @@
+{
+  "route_id": "01_create_complete",
+  "title": "Create success: classify -> extract_slots -> create_project",
+  "path": [
+    "classify",
+    "extract_slots",
+    "create_project"
+  ],
+  "description": "Create success: classify -> extract_slots -> create_project"
+}

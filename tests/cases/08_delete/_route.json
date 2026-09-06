@@ -1,0 +1,10 @@
+{
+  "route_id": "08_delete",
+  "title": "Delete unique match: classify -> resolve_target -> delete_project",
+  "path": [
+    "classify",
+    "resolve_target",
+    "delete_project"
+  ],
+  "description": "Delete unique match: classify -> resolve_target -> delete_project"
+}

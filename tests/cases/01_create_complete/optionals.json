@@ -1,0 +1,28 @@
+{
+  "id": "optionals",
+  "description": "Create and persist optional location / status",
+  "state": {
+    "user_input": "create a project called Gamma for customer Initech",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {
+      "project_name": "Gamma",
+      "customer": "Initech",
+      "location": "London",
+      "status": "active"
+    }
+  },
+  "expect": {
+    "last_node": "create_project",
+    "reply": "Done. Created project \"Gamma\" for customer Initech.\nAlso recorded: location=London, status=active.",
+    "storage_count": 1,
+    "storage_has": [
+      {
+        "project_name": "Gamma",
+        "customer": "Initech"
+      }
+    ]
+  }
+}

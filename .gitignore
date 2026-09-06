@@ -31,6 +31,8 @@ build/
 .ruff_cache/
 .coverage
 htmlcov/
+tests/reports/*
+!tests/reports/.gitkeep
 
 # OS and editor
 .DS_Store

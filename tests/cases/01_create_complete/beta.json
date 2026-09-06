@@ -1,0 +1,26 @@
+{
+  "id": "beta",
+  "description": "Create Beta / Globex in one sentence",
+  "state": {
+    "user_input": "create project Beta for Globex",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "create",
+    "extract": {
+      "project_name": "Beta",
+      "customer": "Globex"
+    }
+  },
+  "expect": {
+    "last_node": "create_project",
+    "reply": "Done. Created project \"Beta\" for customer Globex.",
+    "storage_count": 1,
+    "storage_has": [
+      {
+        "project_name": "Beta",
+        "customer": "Globex"
+      }
+    ]
+  }
+}

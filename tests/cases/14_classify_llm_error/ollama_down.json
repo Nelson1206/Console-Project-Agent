@@ -1,0 +1,18 @@
+{
+  "id": "ollama_down",
+  "description": "Ollama is unreachable",
+  "state": {
+    "user_input": "create a project called Alpha for customer Acme",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify_error": true,
+    "classify_error_message": "I could not reach Ollama at the configured URL. Start Ollama and try again."
+  },
+  "expect": {
+    "last_node": "llm_error",
+    "llm_error": true,
+    "intent": "unknown",
+    "reply": "I could not reach Ollama at the configured URL. Start Ollama and try again."
+  }
+}

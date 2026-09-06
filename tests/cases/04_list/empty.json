@@ -1,0 +1,15 @@
+{
+  "id": "empty",
+  "description": "Empty store list",
+  "state": {
+    "user_input": "list projects",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "list"
+  },
+  "expect": {
+    "last_node": "list_projects",
+    "reply": "No projects found. Create one by describing it in natural language."
+  }
+}

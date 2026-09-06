@@ -79,6 +79,28 @@ On start the app prints a short banner and welcome text, then the `> ` prompt. T
 
 Projects are saved to `data/projects.json`. If that file is missing it is treated as an empty list. If it is corrupt, the app reports an English error and does not overwrite it.
 
+## Tests
+
+Graph route cases live under `tests/cases/`. Each folder is one LangGraph path. The runner **does not call Ollama**; classify and extract values come from the JSON case. Full usage, case schema, and how to add a case are in [`tests/README.md`](tests/README.md).
+
+From the project root with the virtualenv active and the package installed:
+
+```bash
+python -m tests
+python -m tests --list
+python -m tests 01_create_complete
+python -m tests --route 06_update --case unique_customer
+```
+
+Optional pytest (`pip install -e ".[test]"`):
+
+```bash
+python -m pytest
+python -m pytest --route 01_create_complete
+```
+
+Reports go to `tests/reports/latest.md` and `tests/reports/latest.json` (only the cases that ran).
+
 ## LangGraph workflow
 
 Each line of input is one LangGraph turn.

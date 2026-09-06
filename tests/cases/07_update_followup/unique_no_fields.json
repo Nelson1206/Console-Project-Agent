@@ -1,0 +1,26 @@
+{
+  "id": "unique_no_fields",
+  "description": "Target resolved but no fields to change",
+  "state": {
+    "user_input": "update Alpha",
+    "dialog_state": "idle"
+  },
+  "llm": {
+    "classify": "update"
+  },
+  "seed_projects": [
+    {
+      "id": "id-alpha-acme",
+      "project_name": "Alpha",
+      "customer": "Acme",
+      "created_at": "2026-01-01T00:00:00+00:00"
+    }
+  ],
+  "expect": {
+    "last_node": "ask_followup",
+    "dialog_state": "collecting",
+    "pending_action": "update",
+    "selected_id": "id-alpha-acme",
+    "reply": "Which fields should I update? You can change project name, customer, start date, location, status, or notes."
+  }
+}
