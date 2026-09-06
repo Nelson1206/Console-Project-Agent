@@ -65,7 +65,7 @@ Shared `resolve_target` for get / update / delete:
 - 1 match → `get_project` / `update_project` / `delete_project`
 - several matches → `ask_disambiguation` → END (next turn carries `pending_action`)
 
-`quit` / `exit` may short-circuit in the REPL; if they enter the graph, set `should_exit=True`.
+`quit` / `exit` may be handled in the REPL before the graph. All other natural-language lines, including `list projects`, go through the classify node. If `quit` / `exit` enter the graph, set `should_exit=True`.
 
 ### 3.1 Nodes
 
@@ -174,7 +174,7 @@ Do not implement an `OPENROUTER_API_KEY` path. `.env.example` and README list Ol
 ### 6.1 Calls
 
 - `classify`: structured output, enum `create`, `list`, `get`, `update`, `delete`, `exit`, `unknown`, `follow_up`. The system prompt includes `dialog_state`, `missing_fields`, and `pending_action`. While collecting a create draft, a bare value (short, no intent verb or field label) is forced to `follow_up` even if the model returns `get`, `delete`, `create`, or `unknown`. While collecting an update, a model `update` is treated as `follow_up` so the locked target is kept.
-- `extract_slots`: structured output; required fields may be null; optionals only when present. When merging into draft, do not clear already-filled fields that this turn did not mention. `fill_remaining` may write a bare follow-up value into the one missing required field; it must not swallow commands, labeled clauses, or questions.
+- `extract_slots`: structured output is the primary extractor; required fields may be null; optionals only when present. A regex lock applies only to the assignment phrases `called X for customer Y`, `project X for Y`, and labeled `field is/to` updates; on those keys the lock wins. When merging into draft, do not clear already-filled fields that this turn did not mention. `fill_remaining` may write a bare follow-up value into the one missing required field; it must not swallow commands, labeled clauses, or questions.
 - Prompts live in `prompts.py`, English, short, intents and fields only.
 
 ### 6.2 Failure

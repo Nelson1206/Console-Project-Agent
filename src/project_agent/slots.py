@@ -1,4 +1,4 @@
-"""Rule-based slot, target, and update extraction."""
+"""Golden-path locks, target lookup, and follow-up value guards."""
 
 from __future__ import annotations
 
@@ -28,19 +28,6 @@ _PROJECT_FOR = re.compile(
     r"\bproject(?:\s+called)?\s+(?P<name>.+?)\s+for(?:\s+customer)?\s+(?P<customer>.+)$",
     re.IGNORECASE,
 )
-_FOR_CUSTOMER = re.compile(r"\bfor\s+customer\s+(?P<customer>.+)$", re.IGNORECASE)
-_PROJECT_NAME = re.compile(r"\bproject(?:\s+called)?\s+(?P<name>.+)$", re.IGNORECASE)
-_BARE_PAIR = re.compile(
-    r"^(?P<name>.+?)\s+for(?:\s+customer)?\s+(?P<customer>.+)$",
-    re.IGNORECASE,
-)
-_STATUS = re.compile(r"\bwith\s+status\s+(?P<status>.+?)(?=\s+in\b|\s+start|\s+notes?\b|$)", re.I)
-_LOCATION = re.compile(r"\bin\s+(?P<location>.+?)(?=\s+with\s+status\b|\s+start|\s+notes?\b|$)", re.I)
-_START = re.compile(
-    r"\b(?:start(?:ing)?(?:\s+date)?|on)\s+(?P<start_date>\d{4}-\d{2}-\d{2}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})",
-    re.I,
-)
-_NOTES = re.compile(r"\bnotes?\s*[:=]\s*(?P<notes>.+)$", re.I)
 _TARGET = re.compile(
     r"\b(?:show|get|update|change|delete|remove)(?:\s+project)?\s+(?P<name>.+?)"
     r"(?=\s+(?:customer|status|location|notes?|start\s*date|project\s*name|set|to)\b|$)",
@@ -75,25 +62,6 @@ def _clean(value: str | None) -> str | None:
     return text or None
 
 
-def extract_optionals(text: str) -> tuple[dict[str, str], str]:
-    remaining = text.strip()
-    found: dict[str, str] = {}
-    for pattern, key in (
-        (_STATUS, "status"),
-        (_LOCATION, "location"),
-        (_START, "start_date"),
-        (_NOTES, "notes"),
-    ):
-        match = pattern.search(remaining)
-        if not match:
-            continue
-        value = _clean(match.group(key))
-        if value:
-            found[key] = value
-            remaining = (remaining[: match.start()] + " " + remaining[match.end() :]).strip()
-    return found, remaining
-
-
 def user_omitted_required(text: str, field: str) -> bool:
     """True when the sentence has a blank required slot, not merely an unmentioned one."""
     if field == "project_name":
@@ -103,14 +71,12 @@ def user_omitted_required(text: str, field: str) -> bool:
     return False
 
 
-def extract_from_text(text: str) -> dict[str, str]:
+def extract_locked(text: str) -> dict[str, str]:
+    """High-confidence assignment phrases only. Optional fields come from the LLM."""
     raw = text.strip()
     if not raw:
         return {}
-    optionals, remaining = extract_optionals(raw)
-    required = _extract_required(remaining)
-    labeled = extract_updates(raw)
-    return {**optionals, **required, **labeled}
+    return {**_extract_golden_required(raw), **extract_updates(raw)}
 
 
 def extract_target_name(text: str) -> str | None:
@@ -172,20 +138,11 @@ def fill_remaining(draft: dict, user_input: str) -> dict:
     return updated
 
 
-def _extract_required(raw: str) -> dict[str, str]:
+def _extract_golden_required(raw: str) -> dict[str, str]:
     match = _CALLED.search(raw)
     if match:
         return _payload(match.group("name"), match.group("customer"))
     match = _PROJECT_FOR.search(raw)
-    if match:
-        return _payload(match.group("name"), match.group("customer"))
-    match = _FOR_CUSTOMER.search(raw)
-    if match:
-        return _payload(None, match.group("customer"))
-    match = _PROJECT_NAME.search(raw)
-    if match:
-        return _payload(match.group("name"), None)
-    match = _BARE_PAIR.fullmatch(raw)
     if match:
         return _payload(match.group("name"), match.group("customer"))
     return {}

@@ -6,7 +6,7 @@ from project_agent import replies
 from project_agent.llm import LLMError, classify_with_llm, extract_with_llm
 from project_agent.models import OPTIONAL_FIELDS, Project
 from project_agent.slots import (
-    extract_from_text,
+    extract_locked,
     extract_target_name,
     extract_updates,
     fill_remaining,
@@ -20,17 +20,8 @@ from project_agent.storage import StorageError, add_project, get_by_id, get_by_n
 from project_agent.storage import delete_project as remove_project
 from project_agent.storage import update_project as save_project_updates
 
-_EXACT_COMMANDS = {
-    "quit": "exit",
-    "exit": "exit",
-    "list projects": "list",
-}
 _CANCEL_INTENTS = {"create", "list", "get", "update", "delete", "exit", "unknown"}
 _BARE_VALUE_OVERRIDE = {"create", "get", "update", "delete", "unknown"}
-
-
-def _keyword_intent(text: str) -> str | None:
-    return _EXACT_COMMANDS.get(text.casefold().strip())
 
 
 def classify_intent(
@@ -43,9 +34,6 @@ def classify_intent(
     text = user_input.strip()
     if dialog_state == "disambiguating" and text.isdigit():
         return "disambiguation_choice"
-    keyword = _keyword_intent(text)
-    if keyword is not None:
-        return keyword
     intent = classify_with_llm(
         text,
         dialog_state=dialog_state,
@@ -118,17 +106,16 @@ def classify(state: AgentState) -> dict:
 def extract_slots(state: AgentState) -> dict:
     draft = dict(state.get("draft") or {})
     user_input = (state.get("user_input") or "").strip()
-    extracted = extract_from_text(user_input)
+    locked = extract_locked(user_input)
     follow_up = state.get("intent") == "follow_up"
     if follow_up:
-        extracted = _llm_slots_for_follow_up(draft, extracted, user_input)
+        llm_slots = _llm_slots_for_follow_up(draft, locked, user_input)
     else:
         try:
             llm_slots = extract_with_llm(user_input)
             for field in ("project_name", "customer"):
-                if field not in extracted and user_omitted_required(user_input, field):
+                if field not in locked and user_omitted_required(user_input, field):
                     llm_slots.pop(field, None)
-            extracted = merge_draft(llm_slots, extracted)
         except LLMError as exc:
             return {
                 "draft": draft,
@@ -136,6 +123,7 @@ def extract_slots(state: AgentState) -> dict:
                 "last_node": "extract_slots",
                 "reply": exc.user_message,
             }
+    extracted = merge_draft(llm_slots, locked)
     merged = merge_draft(draft, extracted)
     if follow_up:
         merged = fill_remaining(merged, user_input)
@@ -150,20 +138,20 @@ def extract_slots(state: AgentState) -> dict:
 
 def _llm_slots_for_follow_up(
     draft: dict,
-    extracted: dict[str, str],
+    locked: dict[str, str],
     user_input: str,
 ) -> dict[str, str]:
     """Fill still-missing fields from the LLM; never overwrite a filled required slot."""
-    preview = merge_draft(draft, extracted)
+    preview = merge_draft(draft, locked)
     still_missing = missing_required(preview)
     if not still_missing:
-        return extracted
+        return {}
     try:
         llm_slots = extract_with_llm(user_input)
     except LLMError:
-        return extracted
+        return {}
     allowed = set(still_missing) | set(OPTIONAL_FIELDS)
-    return merge_draft({key: value for key, value in llm_slots.items() if key in allowed}, extracted)
+    return {key: value for key, value in llm_slots.items() if key in allowed}
 
 
 def ask_followup(state: AgentState) -> dict:
