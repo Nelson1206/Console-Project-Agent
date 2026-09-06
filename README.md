@@ -4,7 +4,7 @@ A stdin/stdout app that uses LangChain + LangGraph and a local Ollama model to m
 
 ## Requirements
 
-- Python 3.12
+- Python 3.10+
 - [Ollama](https://ollama.com/) running locally
 
 No cloud API key is required.
